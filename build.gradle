@@ -22,10 +22,12 @@ repositories {
 
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT'
-}
 
-processResources {
-    from(sourceSets.main.resources.srcDirs) {
-        filter ReplaceTokens, tokens: [version: version]
-    }
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+
+    compileOnly 'org.projectlombok:lombok:1.18.12'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+
+    compileOnly 'org.spigotmc:plugin-annotations:1.2.2-SNAPSHOT'
+    annotationProcessor 'org.spigotmc:plugin-annotations:1.2.2-SNAPSHOT'
 }
