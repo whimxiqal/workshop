@@ -25,6 +25,7 @@
 
 package com.pietersvenson.workshop.command;
 
+import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandTree;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
@@ -50,16 +51,21 @@ public class WorkshopCommandRoot extends CommandTree.CommandNode {
         Collections.singletonList("ws"),
         "");
     addChildren(new FreezeCommand(this));
+    addChildren(new HomeCommand(this));
   }
 
   @Override
   public boolean onWrappedCommand(CommandSender sender, Command command, String label, String[] args) {
     // TODO: format plugin splash screen
     if (args.length > 0) {
-      sender.sendMessage(Format.error("Unknown subcommand. Try " + ChatColor.GRAY + "/ws help"));
+      sendCommandError(sender, "Unknown command.");
+      return false;
     }
     sender.sendMessage(ChatColor.GRAY + "# " + Format.THEME + "Workshop " + ChatColor.GRAY + "v." + Reference.VERSION + " #");
     sender.sendMessage(ChatColor.GRAY + "Author(s): " + ChatColor.AQUA + "Pieter Svenson");
+
+    // TODO remove this:
+    Workshop.getInstance().getState().save();
     return true;
   }
 

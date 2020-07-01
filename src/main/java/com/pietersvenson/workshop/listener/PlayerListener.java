@@ -26,8 +26,10 @@
 package com.pietersvenson.workshop.listener;
 
 import com.pietersvenson.workshop.Workshop;
+import com.pietersvenson.workshop.util.Format;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -52,6 +54,14 @@ public class PlayerListener implements Listener {
   public void onPlayerInteract(PlayerInteractEvent playerInteractEvent) {
     if (Workshop.getInstance().getState().getFreezeManager().isFrozen(playerInteractEvent.getPlayer())) {
       playerInteractEvent.setCancelled(true);
+    }
+  }
+
+  @EventHandler
+  public void onPlayerChat(AsyncPlayerChatEvent playerChatEvent) {
+    if (Workshop.getInstance().getState().getFreezeManager().isFrozen(playerChatEvent.getPlayer())) {
+      playerChatEvent.setCancelled(true);
+      playerChatEvent.getPlayer().sendMessage(Format.error("You can't chat when you are frozen!"));
     }
   }
 

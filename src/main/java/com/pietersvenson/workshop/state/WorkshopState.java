@@ -25,12 +25,75 @@
 
 package com.pietersvenson.workshop.state;
 
-import com.pietersvenson.workshop.freeze.FreezeManager;
+import com.google.common.io.Files;
+import com.pietersvenson.workshop.Workshop;
+import com.pietersvenson.workshop.features.freeze.FreezeManager;
+import com.pietersvenson.workshop.features.home.HomeManager;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 
-public class WorkshopState {
+import javax.annotation.Nonnull;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public final class WorkshopState {
 
   @Getter
   private final FreezeManager freezeManager = new FreezeManager();
+
+  @Getter
+  private final HomeManager homeManager = new HomeManager();
+
+  private List<Stateful> getStatefuls() {
+    return Arrays.stream(WorkshopState.class.getDeclaredFields())
+        .map(field -> {
+          try {
+            return field.get(this);
+          } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+          }
+        })
+        .filter(object -> object instanceof Stateful)
+        .map(object -> ((Stateful) object))
+        .collect(Collectors.toList());
+  }
+
+  public void save() {
+    getStatefuls().forEach(stateful -> {
+      File stateFile = getStateFile(stateful);
+      try {
+        Files.write(stateful.getState().getBytes(), stateFile);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    });
+  }
+
+  public void load() {
+    getStatefuls().forEach(stateful -> {
+      File stateFile = getStateFile(stateful);
+      try {
+        if (stateFile.exists()) {
+          stateful.loadStateful(Files.toString(stateFile, StandardCharsets.UTF_8));
+        } else {
+          stateFile.createNewFile();
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    });
+  }
+
+  public static File getStateFile(Stateful stateful) {
+    Workshop.getInstance().getDataFolder().mkdirs();
+    return new File(Workshop.getInstance().getDataFolder().getPath() + "/" + stateful.getBasicFileName() + ".yml");
+  }
 
 }

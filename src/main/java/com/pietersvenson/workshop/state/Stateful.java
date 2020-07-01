@@ -23,44 +23,19 @@
  *
  */
 
-package com.pietersvenson.workshop.freeze;
+package com.pietersvenson.workshop.state;
 
-import java.util.Set;
-import java.util.UUID;
+import javax.annotation.Nonnull;
 
-import com.google.common.collect.Sets;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+public interface Stateful {
 
-public class FreezeManager {
+  @Nonnull
+  String getBasicFileName();
 
-  private boolean allFrozen;
-  private Set<UUID> frozenPlayers = Sets.newHashSet();
+  @Nonnull
+  String getState();
 
-  public void freezeAll() {
-    Bukkit.getServer().getOnlinePlayers().forEach(player -> frozenPlayers.add(player.getUniqueId()));
-    allFrozen = true;
-  }
-
-  public void unfreezeAll() {
-    frozenPlayers.clear();
-    allFrozen = false;
-  }
-
-  public boolean freeze(Player player) {
-    return frozenPlayers.add(player.getUniqueId());
-  }
-
-  public boolean unfreeze(Player player) {
-    return frozenPlayers.remove(player.getUniqueId());
-  }
-
-  public boolean isAllFrozen() {
-    return allFrozen;
-  }
-
-  public boolean isFrozen(Player player) {
-    return frozenPlayers.contains(player.getUniqueId());
-  }
+  @Nonnull
+  void loadStateful(String state);
 
 }

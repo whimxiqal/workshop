@@ -30,4 +30,7 @@ dependencies {
 
     compileOnly 'org.spigotmc:plugin-annotations:1.2.2-SNAPSHOT'
     annotationProcessor 'org.spigotmc:plugin-annotations:1.2.2-SNAPSHOT'
+
+    compile group: 'org.yaml', name: 'snakeyaml', version: '1.8'
+
 }

@@ -28,7 +28,7 @@ package com.pietersvenson.workshop.command;
 import com.google.common.collect.Lists;
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandTree;
-import com.pietersvenson.workshop.freeze.FreezeManager;
+import com.pietersvenson.workshop.features.freeze.FreezeManager;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
 import org.bukkit.Bukkit;
@@ -38,13 +38,12 @@ import org.bukkit.entity.Player;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class FreezeCommand extends CommandTree.CommandNode {
 
-  public FreezeCommand(@Nullable CommandTree.CommandNode parent) {
+  FreezeCommand(@Nullable CommandTree.CommandNode parent) {
     super(parent,
         Permissions.STAFF,
         "The base command for managing the freeze state of all players",
@@ -90,11 +89,19 @@ public class FreezeCommand extends CommandTree.CommandNode {
             freezeManager.unfreeze(player);
             sender.sendMessage(Format.success("Unfroze " + player.getName()));
           } else {
+            if (player.hasPermission(Permissions.STAFF)) {
+              sender.sendMessage(Format.error("You can't freeze staff!"));
+              return false;
+            }
             freezeManager.freeze(player);
             sender.sendMessage(Format.success("Froze " + player.getName()));
           }
         } else {
           if (args[1].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("t")) {
+            if (player.hasPermission(Permissions.STAFF)) {
+              sender.sendMessage(Format.error("You can't freeze staff!"));
+              return false;
+            }
             freezeManager.freeze(player);
             sender.sendMessage(Format.success("Froze " + player.getName()));
           } else if (args[1].equalsIgnoreCase("false") || args[1].equalsIgnoreCase("f")) {
@@ -110,6 +117,23 @@ public class FreezeCommand extends CommandTree.CommandNode {
     }
     sendCommandError(sender, "No player matches that name!");
     return false;
+  }
+
+  @Override
+  public List<String> onExtraTabComplete(CommandSender sender, String[] args) {
+    List<String> out = Lists.newLinkedList();
+    if (args.length == 1) {
+      out.add("all");
+      out.addAll(Bukkit.getOnlinePlayers()
+          .stream()
+          .filter(player -> !player.hasPermission(Permissions.STAFF))
+          .map(Player::getName)
+          .collect(Collectors.toList()));
+    } else if (args.length == 2) {
+      out.add("true");
+      out.add("false");
+    }
+    return out;
   }
 
 }

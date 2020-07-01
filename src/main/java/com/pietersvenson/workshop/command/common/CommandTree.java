@@ -29,6 +29,7 @@ import com.google.common.base.Preconditions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -44,6 +45,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.StringUtil;
 
 public abstract class CommandTree {
 
@@ -59,9 +61,10 @@ public abstract class CommandTree {
 
   public static void register(@Nonnull JavaPlugin plugin, @Nonnull CommandNode root) {
     Preconditions.checkNotNull(plugin.getCommand(root.getPrimaryAlias())).setExecutor(root);
+    Preconditions.checkNotNull(plugin.getCommand(root.getPrimaryAlias())).setTabCompleter(root);
   }
 
-  public abstract static class CommandNode implements CommandExecutor {
+  public abstract static class CommandNode implements CommandExecutor, TabCompleter {
     private final CommandNode parent;
     private final Permission permission;
     private final String description;
@@ -106,69 +109,73 @@ public abstract class CommandTree {
     // Getters and Setters
 
     @Nullable
-    public CommandNode getParent() {
+    public final CommandNode getParent() {
       return parent;
     }
 
     @Nonnull
-    public Optional<Permission> getPermission() {
+    public final Optional<Permission> getPermission() {
       return Optional.ofNullable(permission);
     }
 
     @Nonnull
-    public String getDescription() {
+    public final String getDescription() {
       return description;
     }
 
     @Nonnull
-    public String getPrimaryAlias() {
+    public final String getPrimaryAlias() {
       return aliases.get(0);
     }
 
     @Nonnull
-    public List<String> getAliases() {
+    public final List<String> getAliases() {
       return aliases;
     }
 
-    public void addAliases(String... aliases) {
+    public final void addAliases(String... aliases) {
       this.aliases.addAll(Arrays.asList(aliases));
     }
 
     @Nonnull
-    public String getUsage() {
+    public final String getFullCommand() {
       StringBuilder command = new StringBuilder(getPrimaryAlias());
       CommandNode cur = this;
       while (!cur.isRoot()) {
         command.insert(0, cur.parent.getPrimaryAlias() + " ");
         cur = cur.parent;
       }
-      return command.toString() + " " + getParameterUsage();
+      return command.toString();
     }
 
-    public void addChildren(CommandNode... nodes) {
+    public final void addChildren(CommandNode... nodes) {
       this.children.addAll(Arrays.asList(nodes));
     }
 
     @Nonnull
-    public List<CommandNode> getChildren() {
+    public final List<CommandNode> getChildren() {
       return children;
     }
 
     @Nonnull
-    public String getParameterUsage() {
+    public final String getParameterUsage() {
       return parameterUsage;
     }
 
-    public boolean isRoot() {
+    public final boolean isRoot() {
       return parent == null;
     }
 
-    public void sendCommandError(CommandSender sender, String error) {
-      sender.sendMessage(Format.error(error + "\nUsage: " + ChatColor.GRAY + "/" + getUsage()));
+    public final void sendCommandError(CommandSender sender, String error) {
+      sender.sendMessage(Format.error(error + "\nTry: " + ChatColor.GRAY + "/" + getFullCommand() + " help"));
     }
 
     @Override
     public final boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+      if (this.permission != null && !sender.hasPermission(this.permission)) {
+        sender.sendMessage(Format.error("You don't have permission to do this!"));
+        return false;
+      }
       if (args.length < 1) {
         return onWrappedCommand(sender, command, label, args);
       }
@@ -184,6 +191,37 @@ public abstract class CommandTree {
 
     public abstract boolean onWrappedCommand(CommandSender sender, Command command, String label, String[] args);
 
+    @Override
+    public final List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+      List<String> cmds = Lists.newLinkedList();
+      if (this.permission != null && !sender.hasPermission(this.permission)) {
+        return cmds; // empty
+      }
+      if (args.length == 0) {
+        return cmds; // empty
+      }
+      for (CommandNode child : children) {
+        for (int i = 0; i < child.aliases.size(); i++) {
+          String alias = child.aliases.get(i);
+          if (alias.equalsIgnoreCase(args[0])) {
+            return child.onTabComplete(sender, command, child.getPrimaryAlias(), Arrays.copyOfRange(args, 1, args.length));
+          }
+          if (args.length == 1 && i == 0 && (child.permission == null || sender.hasPermission(child.permission))) {
+            cmds.add(alias);
+          }
+        }
+      }
+      cmds.addAll(onExtraTabComplete(sender, args));
+      List<String> out = Lists.newLinkedList();
+      StringUtil.copyPartialMatches(args[args.length - 1], cmds, out);
+      Collections.sort(out);
+      return out;
+    }
+
+    public List<String> onExtraTabComplete(CommandSender sender, String[] args) {
+      return Lists.newLinkedList();
+    }
+
   }
 
   private static final class HelpCommandNode extends CommandNode implements CommandExecutor {
@@ -191,7 +229,7 @@ public abstract class CommandTree {
     public HelpCommandNode(@Nonnull CommandNode parent) {
       super(parent,
           null,
-          "Command help for " + parent.getUsage(),
+          "Command help for " + parent.getFullCommand(),
           "help",
           null,
           "",
