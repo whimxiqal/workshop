@@ -29,7 +29,7 @@ import org.bukkit.permissions.Permission;
 
 public class Permissions {
 
-  public final static Permission COMMAND_ROOT = new Permission("workshop.command");
-  public final static Permission STAFF = new Permission("workshop.staff");
+  public static final Permission COMMAND_ROOT = new Permission("workshop.command");
+  public static final Permission STAFF = new Permission("workshop.staff");
 
 }

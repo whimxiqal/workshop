@@ -27,31 +27,31 @@ package com.pietersvenson.workshop.listener;
 
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.permission.Permissions;
-import com.pietersvenson.workshop.util.Inventories;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 public class InventoryListener implements Listener {
-
-
 
   @EventHandler
   public void onInventoryCreative(InventoryCreativeEvent inventoryCreativeEvent) {
     if (!inventoryCreativeEvent.getWhoClicked().hasPermission(Permissions.STAFF)) {
-      Inventories.clearBannedItems(inventoryCreativeEvent.getWhoClicked().getInventory());
+      Workshop.getInstance()
+          .getState()
+          .getNoitemManager()
+          .scheduledClean(inventoryCreativeEvent.getWhoClicked().getInventory());
     }
   }
 
   @EventHandler
   public void onInventoryClick(InventoryClickEvent inventoryClickEvent) {
     if (!inventoryClickEvent.getWhoClicked().hasPermission(Permissions.STAFF)) {
-      Inventories.clearBannedItems(inventoryClickEvent.getWhoClicked().getInventory());
+      Workshop.getInstance()
+          .getState()
+          .getNoitemManager()
+          .scheduledClean(inventoryClickEvent.getWhoClicked().getInventory());
     }
   }
 

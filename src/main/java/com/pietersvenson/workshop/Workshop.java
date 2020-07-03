@@ -25,11 +25,10 @@
 
 package com.pietersvenson.workshop;
 
-import com.pietersvenson.workshop.command.common.CommandTree;
 import com.pietersvenson.workshop.command.WorkshopCommandRoot;
+import com.pietersvenson.workshop.command.common.CommandTree;
 import com.pietersvenson.workshop.listener.InventoryListener;
 import com.pietersvenson.workshop.listener.PlayerListener;
-import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.state.WorkshopState;
 import com.pietersvenson.workshop.util.Reference;
 import lombok.Getter;
@@ -69,7 +68,6 @@ public final class Workshop extends JavaPlugin {
 
     getLogger().info("Registering commands...");
     CommandTree.register(this, new WorkshopCommandRoot());
-    this.getCommand("workshop").setPermission(Permissions.COMMAND_ROOT.getName());
 
     getLogger().info("Registering listeners...");
     getServer().getPluginManager().registerEvents(new PlayerListener(), this);

@@ -25,13 +25,12 @@
 
 package com.pietersvenson.workshop.features.freeze;
 
-import java.util.Collection;
+import com.google.common.collect.Sets;
+import com.pietersvenson.workshop.util.Format;
+
 import java.util.Set;
 import java.util.UUID;
 
-import com.google.common.collect.Sets;
-import com.pietersvenson.workshop.permission.Permissions;
-import com.pietersvenson.workshop.util.Format;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -46,14 +45,18 @@ public class FreezeManager {
   }
 
   public void unfreezeAll() {
+    Bukkit.getOnlinePlayers().forEach(this::unfreeze);
     frozenPlayers.clear();
     allFrozen = false;
   }
 
+  /**
+   * Freeze a player.
+   *
+   * @param player the player
+   * @return true if player was frozen properly
+   */
   public boolean freeze(Player player) {
-    if (player.hasPermission(Permissions.STAFF)) {
-      return false;
-    }
     boolean out = frozenPlayers.add(player.getUniqueId());
     if (out) {
       player.sendMessage(Format.error("You have been frozen!"));
@@ -61,6 +64,12 @@ public class FreezeManager {
     return out;
   }
 
+  /**
+   * Unfreeze a player.
+   *
+   * @param player the player
+   * @return true if player was unfrozen properly
+   */
   public boolean unfreeze(Player player) {
     boolean out = frozenPlayers.remove(player.getUniqueId());
     if (out) {

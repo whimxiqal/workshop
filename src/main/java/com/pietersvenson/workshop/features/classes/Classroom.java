@@ -23,27 +23,12 @@
  *
  */
 
-package com.pietersvenson.workshop.util;
+package com.pietersvenson.workshop.features.classes;
 
-import com.pietersvenson.workshop.Workshop;
-import org.bukkit.Bukkit;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
+import java.util.List;
 
-public final class Inventories {
+public class Classroom {
 
-  private Inventories() {
-  }
-
-  public static void clearBannedItems(Inventory inventory) {
-    Bukkit.getScheduler().runTask(Workshop.getInstance(), () -> {
-      for (int i = 0; i < inventory.getSize(); i++) {
-        ItemStack itemStack = inventory.getItem(i);
-        if (itemStack != null && Workshop.getInstance().getState().getNoitemManager().isBanned(itemStack.getType())) {
-          inventory.clear(i);
-        }
-      }
-    });
-  }
+  List<String> participants;
 
 }

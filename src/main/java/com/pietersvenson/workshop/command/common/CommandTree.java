@@ -26,34 +26,29 @@
 package com.pietersvenson.workshop.command.common;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.pietersvenson.workshop.util.Format;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.pietersvenson.workshop.Workshop;
-import com.pietersvenson.workshop.util.Format;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.ChatPaginator;
 import org.bukkit.util.StringUtil;
 
-public abstract class CommandTree {
+public class CommandTree {
 
   private CommandNode root;
 
@@ -65,9 +60,21 @@ public abstract class CommandTree {
     return root;
   }
 
-  public static void register(@Nonnull JavaPlugin plugin, @Nonnull CommandNode root) {
-    Preconditions.checkNotNull(plugin.getCommand(root.getPrimaryAlias())).setExecutor(root);
-    Preconditions.checkNotNull(plugin.getCommand(root.getPrimaryAlias())).setTabCompleter(root);
+  /**
+   * Register all functionality of a command, noted in the plugin.yml.
+   *
+   * @param plugin the plugin under which this command is registered
+   * @param root   the root CommandNode of the entire command tree,
+   *               whose name is registered in the plugin.yml
+   * @return the tree of all commands with the given root
+   */
+  public static CommandTree register(@Nonnull JavaPlugin plugin, @Nonnull CommandNode root) {
+    CommandTree tree = new CommandTree(root);
+    PluginCommand command = Preconditions.checkNotNull(plugin.getCommand(root.getPrimaryAlias()));
+    command.setExecutor(root);
+    command.setTabCompleter(root);
+    root.getPermission().map(Permission::getName).ifPresent(command::setPermission);
+    return tree;
   }
 
   public abstract static class CommandNode implements CommandExecutor, TabCompleter {
@@ -78,6 +85,14 @@ public abstract class CommandTree {
     private final List<CommandNode> children = Lists.newLinkedList();
     private final Map<Parameter, String> parameters = Maps.newLinkedHashMap();
 
+    /**
+     * Simple constructor.
+     *
+     * @param parent       parent node, null if none
+     * @param permission   permission allowing this command
+     * @param description  describes the function of this command
+     * @param primaryAlias the primary label used to call this command
+     */
     public CommandNode(@Nullable CommandNode parent,
                        @Nullable Permission permission,
                        @Nonnull String description,
@@ -86,6 +101,15 @@ public abstract class CommandTree {
 
     }
 
+    /**
+     * Full constructor.
+     *
+     * @param parent       parent node, null if none
+     * @param permission   permission allowing this command
+     * @param description  describes the function of this command
+     * @param primaryAlias the primary label used to call this command
+     * @param addHelp      whether a help sub-command is generated
+     */
     public CommandNode(@Nullable CommandNode parent,
                        @Nullable Permission permission,
                        @Nonnull String description,
@@ -173,7 +197,10 @@ public abstract class CommandTree {
     }
 
     @Override
-    public final boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public final boolean onCommand(@Nonnull CommandSender sender,
+                                   @Nonnull Command command,
+                                   @Nonnull String label,
+                                   @Nonnull String[] args) {
       if (this.permission != null && !sender.hasPermission(this.permission)) {
         sender.sendMessage(Format.error("You don't have permission to do this!"));
         return false;
@@ -191,10 +218,16 @@ public abstract class CommandTree {
       return onWrappedCommand(sender, command, label, args);
     }
 
-    public abstract boolean onWrappedCommand(CommandSender sender, Command command, String label, String[] args);
+    public abstract boolean onWrappedCommand(@Nonnull CommandSender sender,
+                                             @Nonnull Command command,
+                                             @Nonnull String label,
+                                             @Nonnull String[] args);
 
     @Override
-    public final List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+    public final List<String> onTabComplete(@Nonnull CommandSender sender,
+                                            @Nonnull Command command,
+                                            @Nonnull String label,
+                                            @Nonnull String[] args) {
       List<String> cmds = Lists.newLinkedList();
       if (this.permission != null && !sender.hasPermission(this.permission)) {
         return cmds; // empty
@@ -205,17 +238,29 @@ public abstract class CommandTree {
       for (CommandNode child : children) {
         for (int i = 0; i < child.aliases.size(); i++) {
           String alias = child.aliases.get(i);
+
+          // If any alias matches from this child, then bump us up to its children
           if (alias.equalsIgnoreCase(args[0])) {
-            return child.onTabComplete(sender, command, child.getPrimaryAlias(), Arrays.copyOfRange(args, 1, args.length));
+            return child.onTabComplete(sender,
+                command,
+                child.getPrimaryAlias(),
+                Arrays.copyOfRange(args, 1, args.length));
           }
-          if (args.length == 1 && i == 0 && (child.permission == null || sender.hasPermission(child.permission))) {
-            cmds.add(alias);
+
+          // Only if we're on the last arg of the recursion and we're at the primary alias,
+          // and we have permission to the command, add it
+          if (args.length == 1 && i == 0) {
+            if (child.permission == null || sender.hasPermission(child.permission)) {
+              cmds.add(alias);
+            }
           }
         }
       }
+
       for (Parameter param : parameters.keySet()) {
-        cmds.addAll(param.getNextEntries(sender, Arrays.copyOfRange(args, 0, args.length - 1)));
+        cmds.addAll(param.nextAllowedInputs(sender, Arrays.copyOfRange(args, 0, args.length - 1)));
       }
+
       List<String> out = Lists.newLinkedList();
       StringUtil.copyPartialMatches(args[args.length - 1], cmds, out);
       Collections.sort(out);
@@ -237,9 +282,12 @@ public abstract class CommandTree {
     }
 
     @Override
-    public boolean onWrappedCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onWrappedCommand(@Nonnull CommandSender sender, @Nonnull Command command, @Nonnull String label, @Nonnull String[] args) {
       CommandNode parent = Preconditions.checkNotNull(this.getParent());
-      sender.sendMessage(Format.success("Command Help: " + ChatColor.GRAY + parent.getFullCommand()));
+      sender.sendMessage(Format.success(
+          "Command Help: "
+              + ChatColor.GRAY
+              + parent.getFullCommand()));
       for (CommandNode node : parent.getChildren()) {
         if (node.getPermission().map(sender::hasPermission).orElse(true)) {
           StringBuilder builder = new StringBuilder();

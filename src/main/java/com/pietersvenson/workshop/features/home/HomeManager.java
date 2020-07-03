@@ -27,25 +27,22 @@ package com.pietersvenson.workshop.features.home;
 
 import com.google.common.collect.Maps;
 import com.pietersvenson.workshop.state.Stateful;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
-import org.yaml.snakeyaml.nodes.Tag;
-
-import javax.annotation.Nonnull;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class HomeManager implements Stateful {
-
-  public static final String BASIC_FILE_NAME = "homes";
 
   Map<UUID, Location> homes = Maps.newHashMap();
 
@@ -53,10 +50,22 @@ public class HomeManager implements Stateful {
     return Optional.ofNullable(homes.get(player.getUniqueId()));
   }
 
-  public Location putHome(@Nonnull final Player player, @Nonnull final Location location) {
-    return homes.put(player.getUniqueId(), location);
+  /**
+   * Save a player's home.
+   *
+   * @param player   the player
+   * @param location the previous location
+   * @return
+   */
+  public Optional<Location> setHome(@Nonnull final Player player, @Nonnull final Location location) {
+    return Optional.ofNullable(homes.put(player.getUniqueId(), location));
   }
 
+  /**
+   * Get the homes keyed by username.
+   *
+   * @return the map of player homes
+   */
   public Map<String, Location> getHomesByName() {
     return this.homes.entrySet()
         .stream()
@@ -74,9 +83,7 @@ public class HomeManager implements Stateful {
   @Override
   public String dumpState() {
     Map<String, Map<String, Object>> serializedState = new TreeMap<>();
-    homes.forEach((uuid, location) -> {
-      serializedState.put(uuid.toString(), location.serialize());
-    });
+    homes.forEach((uuid, location) -> serializedState.put(uuid.toString(), location.serialize()));
     DumperOptions dumperOptions = new DumperOptions();
     dumperOptions.setIndent(2);
     dumperOptions.setPrettyFlow(true);

@@ -25,37 +25,41 @@
 
 package com.pietersvenson.workshop.util;
 
-import org.bukkit.ChatColor;
+import com.google.common.collect.Lists;
 
-public final class Format {
+import java.util.List;
+import java.util.Random;
 
-  private Format() {
+public final class Randomer {
+
+  private Randomer() {
   }
 
-  public static final ChatColor THEME = ChatColor.YELLOW;
-  public static final ChatColor SUCCESS = ChatColor.GREEN;
-  public static final ChatColor INFO = ChatColor.WHITE;
-  public static final ChatColor WARN = ChatColor.YELLOW;
-  public static final ChatColor ERROR = ChatColor.RED;
+  public enum WordType {
+    ERROR(Lists.newArrayList(
+        "Boink",
+        "Nope",
+        "Nah",
+        "Oops",
+        "Bonk",
+        "Doh",
+        "Rats",
+        "Fooey"
+    ));
 
-  public static String prefix() {
-    return THEME + "Workshop % ";
+    private List<String> list;
+
+    WordType(List<String> list) {
+      this.list = list;
+    }
   }
 
-  public static String success(String message) {
-    return prefix() + SUCCESS + message;
+  public static String word(WordType type) {
+    return chooseRandom(type.list);
   }
 
-  public static String info(String message) {
-    return prefix() + INFO + message;
-  }
-
-  public static String warn(String message) {
-    return prefix() + WARN + message;
-  }
-
-  public static String error(String message) {
-    return prefix() + ERROR + message;
+  private static String chooseRandom(List<String> list) {
+    return list.get(new Random().nextInt(list.size()));
   }
 
 }

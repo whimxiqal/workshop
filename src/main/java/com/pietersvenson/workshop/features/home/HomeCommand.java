@@ -31,19 +31,25 @@ import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
+
+import java.util.Map;
+import java.util.Optional;
+import javax.annotation.Nonnull;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.annotation.Nonnull;
-import java.util.Map;
-import java.util.Optional;
-
 public class HomeCommand extends CommandTree.CommandNode {
 
-  HomeCommand(@Nonnull CommandTree.CommandNode parent) {
+  /**
+   * Default constructor.
+   *
+   * @param parent the parent node
+   */
+  public HomeCommand(@Nonnull CommandTree.CommandNode parent) {
     super(parent,
         Permissions.COMMAND_ROOT,
         "Teleport to saved locations",
@@ -62,7 +68,10 @@ public class HomeCommand extends CommandTree.CommandNode {
   }
 
   @Override
-  public boolean onWrappedCommand(CommandSender sender, Command command, String label, String[] args) {
+  public boolean onWrappedCommand(@Nonnull CommandSender sender,
+                                  @Nonnull Command command,
+                                  @Nonnull String label,
+                                  @Nonnull String[] args) {
     if (!(sender instanceof Player)) {
       sender.sendMessage(Format.error("Only players may execute this command!"));
       return false;
@@ -72,7 +81,11 @@ public class HomeCommand extends CommandTree.CommandNode {
     if (args.length == 0) {
       Optional<Location> home = Workshop.getInstance().getState().getHomeManager().getHome(player);
       if (!home.isPresent()) {
-        player.sendMessage(Format.error("You don't have a home set yet! Use " + ChatColor.GRAY + "/home set" + ChatColor.RED + " to set it."));
+        player.sendMessage(Format.error("You don't have a home set yet! Use "
+            + ChatColor.GRAY
+            + "/home set"
+            + Format.ERROR
+            + " to set it."));
         return false;
       }
 
@@ -107,14 +120,17 @@ public class HomeCommand extends CommandTree.CommandNode {
     }
 
     @Override
-    public boolean onWrappedCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onWrappedCommand(@Nonnull CommandSender sender,
+                                    @Nonnull Command command,
+                                    @Nonnull String label,
+                                    @Nonnull String[] args) {
       if (!(sender instanceof Player)) {
         sender.sendMessage(Format.error("Only players may execute this command!"));
         return false;
       }
 
       Player player = (Player) sender;
-      Workshop.getInstance().getState().getHomeManager().putHome(player, player.getLocation());
+      Workshop.getInstance().getState().getHomeManager().setHome(player, player.getLocation());
       player.sendMessage(Format.success("Home set!"));
       return true;
     }

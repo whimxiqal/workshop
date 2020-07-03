@@ -31,17 +31,25 @@ import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.pietersvenson.workshop.util.Randomer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class NoitemCommand extends CommandTree.CommandNode {
 
+  /**
+   * Default constructor.
+   *
+   * @param parent parent node
+   */
   public NoitemCommand(@Nullable CommandTree.CommandNode parent) {
     super(parent,
         Permissions.STAFF,
@@ -55,7 +63,10 @@ public class NoitemCommand extends CommandTree.CommandNode {
   }
 
   @Override
-  public boolean onWrappedCommand(CommandSender sender, Command command, String label, String[] args) {
+  public boolean onWrappedCommand(@Nonnull CommandSender sender,
+                                  @Nonnull Command command,
+                                  @Nonnull String label,
+                                  @Nonnull String[] args) {
 
     if (args.length == 0) {
       sendCommandError(sender, "Too few arguments!");
@@ -87,10 +98,14 @@ public class NoitemCommand extends CommandTree.CommandNode {
     NoitemManager noitemManager = Workshop.getInstance().getState().getNoitemManager();
     if (noitemManager.isBanned(material)) {
       noitemManager.unban(material);
-      sender.sendMessage(Format.success("The item " + material.toString() + " is now " + ChatColor.YELLOW + "unbanned"));
+        sender.sendMessage(Format.success("The item "
+            + material.toString() + " is now "
+            + ChatColor.YELLOW + "unbanned"));
     } else {
       noitemManager.ban(material);
-      sender.sendMessage(Format.success("The item " + material.toString() + " is now " + ChatColor.RED + "banned"));
+      sender.sendMessage(Format.success("The item "
+          + material.toString() + " is now "
+          + ChatColor.RED + "banned"));
     }
     return true;
   }
@@ -105,14 +120,14 @@ public class NoitemCommand extends CommandTree.CommandNode {
     }
 
     @Override
-    public boolean onWrappedCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onWrappedCommand(@Nonnull CommandSender sender, @Nonnull Command command, @Nonnull String label, @Nonnull String[] args) {
       List<Material> banned = Workshop.getInstance().getState().getNoitemManager().getBanned();
       if (banned.isEmpty()) {
         sender.sendMessage(Format.success("No items are banned."));
       } else {
         sender.sendMessage(Format.success("Banned items: "
-        + ChatColor.WHITE
-        + banned.stream().map(Material::name).collect(Collectors.joining(", "))));
+            + ChatColor.WHITE
+            + banned.stream().map(Material::name).collect(Collectors.joining(", "))));
       }
       return true;
     }

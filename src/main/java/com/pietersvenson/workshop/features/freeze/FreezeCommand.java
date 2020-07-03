@@ -29,19 +29,26 @@ import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandTree;
 import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
-import com.pietersvenson.workshop.features.freeze.FreezeManager;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.pietersvenson.workshop.util.Randomer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.annotation.Nullable;
-
 public class FreezeCommand extends CommandTree.CommandNode {
 
-  FreezeCommand(@Nullable CommandTree.CommandNode parent) {
+  /**
+   * Default constructor.
+   *
+   * @param parent the parent node
+   */
+  public FreezeCommand(@Nullable CommandTree.CommandNode parent) {
     super(parent,
         Permissions.STAFF,
         "Immobilize players",
@@ -60,7 +67,10 @@ public class FreezeCommand extends CommandTree.CommandNode {
   }
 
   @Override
-  public boolean onWrappedCommand(CommandSender sender, Command command, String label, String[] args) {
+  public boolean onWrappedCommand(@Nonnull CommandSender sender,
+                                  @Nonnull Command command,
+                                  @Nonnull String label,
+                                  @Nonnull String[] args) {
     if (args.length == 0) {
       sendCommandError(sender, "Too few arguments!");
       return false;
@@ -75,10 +85,10 @@ public class FreezeCommand extends CommandTree.CommandNode {
           } else {
             if (player.hasPermission(Permissions.STAFF)) {
               sender.sendMessage(Format.error("You can't freeze staff!"));
-              return false;
+            } else {
+              freezeManager.freeze(player);
+              sender.sendMessage(Format.success("Froze " + player.getName()));
             }
-            freezeManager.freeze(player);
-            sender.sendMessage(Format.success("Froze " + player.getName()));
           }
         } else {
           if (args[1].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("t")) {
@@ -86,11 +96,21 @@ public class FreezeCommand extends CommandTree.CommandNode {
               sender.sendMessage(Format.error("You can't freeze staff!"));
               return false;
             }
-            freezeManager.freeze(player);
-            sender.sendMessage(Format.success("Froze " + player.getName()));
+            if (freezeManager.freeze(player)) {
+              sender.sendMessage(Format.success("Froze " + player.getName()));
+            } else {
+              sender.sendMessage(Format.error(
+                  Randomer.word(Randomer.WordType.ERROR)
+                      + ". Are they already frozen?"));
+            }
           } else if (args[1].equalsIgnoreCase("false") || args[1].equalsIgnoreCase("f")) {
-            freezeManager.unfreeze(player);
-            sender.sendMessage(Format.success("Unfroze " + player.getName()));
+            if (freezeManager.unfreeze(player)) {
+              sender.sendMessage(Format.success("Unfroze " + player.getName()));
+            } else {
+              sender.sendMessage(Format.error(
+                  Randomer.word(Randomer.WordType.ERROR)
+                  + ". Are they already unfrozen?"));
+            }
           } else {
             sendCommandError(sender, "Invalid boolean");
             return false;
@@ -115,7 +135,10 @@ public class FreezeCommand extends CommandTree.CommandNode {
     }
 
     @Override
-    public boolean onWrappedCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onWrappedCommand(@Nonnull CommandSender sender,
+                                    @Nonnull Command command,
+                                    @Nonnull String label,
+                                    @Nonnull String[] args) {
       FreezeManager freezeManager = Workshop.getInstance().getState().getFreezeManager();
 
       if (args.length == 0) {
@@ -142,22 +165,3 @@ public class FreezeCommand extends CommandTree.CommandNode {
     }
   }
 }
-
-
-//  @Override
-//  public List<String> onExtraTabComplete(CommandSender sender, String[] args) {
-//    List<String> out = Lists.newLinkedList();
-//    if (args.length == 1) {
-//      out.add("all");
-//      out.addAll(Bukkit.getOnlinePlayers()
-//          .stream()
-//          .filter(player -> !player.hasPermission(Permissions.STAFF))
-//          .map(Player::getName)
-//          .collect(Collectors.toList()));
-//    } else if (args.length == 2) {
-//      out.add("true");
-//      out.add("false");
-//    }
-//    return out;
-//  }
-

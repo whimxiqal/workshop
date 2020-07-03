@@ -30,8 +30,6 @@ import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.features.freeze.FreezeManager;
 import com.pietersvenson.workshop.features.home.HomeManager;
 import com.pietersvenson.workshop.features.noitem.NoitemManager;
-import lombok.Getter;
-import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,11 +38,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.Getter;
+
 public final class WorkshopState {
 
-  @Getter private final FreezeManager freezeManager = new FreezeManager();
-  @Getter private final HomeManager homeManager = new HomeManager();
-  @Getter private final NoitemManager noitemManager = new NoitemManager();
+  @Getter
+  private final FreezeManager freezeManager = new FreezeManager();
+  @Getter
+  private final HomeManager homeManager = new HomeManager();
+  @Getter
+  private final NoitemManager noitemManager = new NoitemManager();
 
 
   private List<Stateful> getStatefuls() {
@@ -62,6 +65,9 @@ public final class WorkshopState {
         .collect(Collectors.toList());
   }
 
+  /**
+   * Save the plugin state to be used across restarts.
+   */
   public void save() {
     getStatefuls().forEach(stateful -> {
       File stateFile = getStateFile(stateful);
@@ -73,6 +79,9 @@ public final class WorkshopState {
     });
   }
 
+  /**
+   * Load the plugin state from last session.
+   */
   public void load() {
     getStatefuls().forEach(stateful -> {
       File stateFile = getStateFile(stateful);
@@ -83,15 +92,25 @@ public final class WorkshopState {
           stateFile.createNewFile();
         }
       } catch (Exception e) {
-        Workshop.getInstance().getLogger().severe("An error occurred trying to load state data from file: " + stateFile.getAbsolutePath());
+        Workshop.getInstance().getLogger().severe(
+            "An error occurred trying to load state data from file: "
+                + stateFile.getAbsolutePath());
         e.printStackTrace();
       }
     });
   }
 
+  /**
+   * Get the state file associated with a specific {@link Stateful}.
+   *
+   * @param stateful the stateful object
+   * @return the appropriate file
+   */
   public static File getStateFile(Stateful stateful) {
     Workshop.getInstance().getDataFolder().mkdirs();
-    return new File(Workshop.getInstance().getDataFolder().getPath() + "/" + stateful.getFileName());
+    return new File(Workshop.getInstance().getDataFolder().getPath()
+        + "/"
+        + stateful.getFileName());
   }
 
 }

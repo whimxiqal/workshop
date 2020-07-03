@@ -28,7 +28,6 @@ package com.pietersvenson.workshop.listener;
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
-import com.pietersvenson.workshop.util.Inventories;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -51,7 +50,7 @@ public class PlayerListener implements Listener {
       Workshop.getInstance().getState().getFreezeManager().freeze(playerJoinEvent.getPlayer());
     }
     if (!playerJoinEvent.getPlayer().hasPermission(Permissions.STAFF)) {
-      Inventories.clearBannedItems(playerJoinEvent.getPlayer().getInventory());
+      Workshop.getInstance().getState().getNoitemManager().scheduledClean(playerJoinEvent.getPlayer().getInventory());
     }
   }
 

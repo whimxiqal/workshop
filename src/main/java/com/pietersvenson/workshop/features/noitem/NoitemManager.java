@@ -30,34 +30,48 @@ import com.google.common.collect.Sets;
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.state.Stateful;
-import com.pietersvenson.workshop.util.Inventories;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.error.YAMLException;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.error.YAMLException;
 
 public class NoitemManager implements Stateful {
 
   Set<String> banned = Sets.newHashSet();
 
+  /**
+   * Add an item to the ban set.
+   *
+   * @param item the item to ban
+   * @return true if addition was successful
+   */
   public boolean ban(Material item) {
     Bukkit.getOnlinePlayers()
         .stream()
         .filter(player -> !player.hasPermission(Permissions.STAFF))
-        .forEach(player -> Inventories.clearBannedItems(player.getInventory()));
+        .forEach(player -> scheduledClean(player.getInventory()));
     if (!item.isItem()) {
       return false;
     }
     return this.banned.add(item.toString().toUpperCase());
   }
 
+  /**
+   * Remove an item from the ban set.
+   *
+   * @param item the item to unban
+   * @return true if removal was successful
+   */
   public boolean unban(Material item) {
     return this.banned.remove(item.toString().toUpperCase());
   }
@@ -66,11 +80,32 @@ public class NoitemManager implements Stateful {
     return this.banned.contains(item.toString().toUpperCase());
   }
 
+  /**
+   * Get all banned items in a list.
+   *
+   * @return the banned materials
+   */
   public List<Material> getBanned() {
     return banned.stream()
         .map(Material::matchMaterial)
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
+  }
+
+  /**
+   * Schedule a clean of a given inventory, which removes all banned items.
+   *
+   * @param inventory the inventory to clean
+   */
+  public void scheduledClean(Inventory inventory) {
+    Bukkit.getScheduler().runTask(Workshop.getInstance(), () -> {
+      for (int i = 0; i < inventory.getSize(); i++) {
+        ItemStack itemStack = inventory.getItem(i);
+        if (itemStack != null && isBanned(itemStack.getType())) {
+          inventory.clear(i);
+        }
+      }
+    });
   }
 
   @Nonnull

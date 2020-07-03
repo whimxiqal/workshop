@@ -23,39 +23,7 @@
  *
  */
 
-package com.pietersvenson.workshop.util;
+package com.pietersvenson.workshop.features.classes;
 
-import org.bukkit.ChatColor;
-
-public final class Format {
-
-  private Format() {
-  }
-
-  public static final ChatColor THEME = ChatColor.YELLOW;
-  public static final ChatColor SUCCESS = ChatColor.GREEN;
-  public static final ChatColor INFO = ChatColor.WHITE;
-  public static final ChatColor WARN = ChatColor.YELLOW;
-  public static final ChatColor ERROR = ChatColor.RED;
-
-  public static String prefix() {
-    return THEME + "Workshop % ";
-  }
-
-  public static String success(String message) {
-    return prefix() + SUCCESS + message;
-  }
-
-  public static String info(String message) {
-    return prefix() + INFO + message;
-  }
-
-  public static String warn(String message) {
-    return prefix() + WARN + message;
-  }
-
-  public static String error(String message) {
-    return prefix() + ERROR + message;
-  }
-
+public class Curriculum {
 }

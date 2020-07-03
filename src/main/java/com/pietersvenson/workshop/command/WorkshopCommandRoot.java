@@ -33,6 +33,9 @@ import com.pietersvenson.workshop.features.noitem.NoitemCommand;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
 import com.pietersvenson.workshop.util.Reference;
+
+import javax.annotation.Nonnull;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -43,6 +46,9 @@ public class WorkshopCommandRoot extends CommandTree.CommandNode {
   public static final String DESCRIPTION = "The root command for all Workshop related commands";
   public static final Permission PERMISSION = Permissions.COMMAND_ROOT;
 
+  /**
+   * Default constructor.
+   */
   public WorkshopCommandRoot() {
     super(
         null,
@@ -56,7 +62,10 @@ public class WorkshopCommandRoot extends CommandTree.CommandNode {
   }
 
   @Override
-  public boolean onWrappedCommand(CommandSender sender, Command command, String label, String[] args) {
+  public boolean onWrappedCommand(@Nonnull CommandSender sender,
+                                  @Nonnull Command command,
+                                  @Nonnull String label,
+                                  @Nonnull String[] args) {
     // TODO: format plugin splash screen
     if (args.length > 0) {
       sendCommandError(sender, "Unknown command.");
