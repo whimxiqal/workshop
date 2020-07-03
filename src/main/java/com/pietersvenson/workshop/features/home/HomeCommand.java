@@ -23,40 +23,42 @@
  *
  */
 
-package com.pietersvenson.workshop.command;
+package com.pietersvenson.workshop.features.home;
 
-import com.google.common.collect.Lists;
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.command.common.Parameter;
+import com.pietersvenson.workshop.command.common.ParameterSuppliers;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class HomeCommand extends CommandTree.CommandNode {
 
   HomeCommand(@Nonnull CommandTree.CommandNode parent) {
     super(parent,
         Permissions.COMMAND_ROOT,
-        "Manage homes",
-        "home",
-        null,
-        "set|...");
+        "Teleport to saved locations",
+        "home");
     addChildren(new HomeSetCommand(this));
+    addInput(Parameter.builder()
+            .supplier(ParameterSuppliers.NONE)
+            .permission(Permissions.COMMAND_ROOT)
+            .build(),
+        "Teleport to your home.");
+    addInput(Parameter.builder()
+            .supplier(ParameterSuppliers.ONLINE_PLAYER)
+            .permission(Permissions.STAFF)
+            .build(),
+        "Teleport to the home of <player>");
   }
 
   @Override
@@ -94,27 +96,14 @@ public class HomeCommand extends CommandTree.CommandNode {
     return false;
   }
 
-  @Override
-  public List<String> onExtraTabComplete(CommandSender sender, String[] args) {
-    List<String> out = Lists.newLinkedList();
-    if (args.length == 1) {
-      out.addAll(Bukkit.getOnlinePlayers()
-          .stream()
-          .map(Player::getName)
-          .collect(Collectors.toList()));
-    }
-    return out;
-  }
-
   private static class HomeSetCommand extends CommandTree.CommandNode {
 
     private HomeSetCommand(@Nonnull HomeCommand parent) {
       super(parent,
           Permissions.COMMAND_ROOT,
-          "Set home",
-          "set",
-          Collections.singletonList("s"),
-          "");
+          "Set the location of your home",
+          "set");
+      addAliases("s");
     }
 
     @Override

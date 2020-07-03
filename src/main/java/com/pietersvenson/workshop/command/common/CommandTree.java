@@ -30,21 +30,27 @@ import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.util.Format;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.ChatPaginator;
 import org.bukkit.util.StringUtil;
 
 public abstract class CommandTree {
@@ -68,17 +74,15 @@ public abstract class CommandTree {
     private final CommandNode parent;
     private final Permission permission;
     private final String description;
-    private final List<String> aliases = new ArrayList<>();
-    private final List<CommandNode> children = new ArrayList<>();
-    private final String parameterUsage;
+    private final List<String> aliases = Lists.newLinkedList();
+    private final List<CommandNode> children = Lists.newLinkedList();
+    private final Map<Parameter, String> parameters = Maps.newLinkedHashMap();
 
     public CommandNode(@Nullable CommandNode parent,
                        @Nullable Permission permission,
                        @Nonnull String description,
-                       @Nonnull String primaryAlias,
-                       @Nullable List<String> otherAliases,
-                       @Nonnull String parameterUsage) {
-      this(parent, permission, description, primaryAlias, otherAliases, parameterUsage, true);
+                       @Nonnull String primaryAlias) {
+      this(parent, permission, description, primaryAlias, true);
 
     }
 
@@ -86,21 +90,13 @@ public abstract class CommandTree {
                        @Nullable Permission permission,
                        @Nonnull String description,
                        @Nonnull String primaryAlias,
-                       @Nullable List<String> otherAliases,
-                       @Nonnull String parameterUsage,
                        boolean addHelp) {
-      Workshop.getInstance().getLogger().info("Creating a new CommandNode: " + primaryAlias);
       Preconditions.checkNotNull(description);
       Preconditions.checkNotNull(primaryAlias);
-      Preconditions.checkNotNull(parameterUsage);
       this.parent = parent;
       this.permission = permission;
       this.description = description;
       this.aliases.add(primaryAlias);
-      if (otherAliases != null) {
-        this.aliases.addAll(otherAliases);
-      }
-      this.parameterUsage = parameterUsage;
       if (addHelp) {
         this.children.add(new HelpCommandNode(this));
       }
@@ -133,8 +129,17 @@ public abstract class CommandTree {
       return aliases;
     }
 
-    public final void addAliases(String... aliases) {
+    public final void addAliases(@Nonnull String... aliases) {
       this.aliases.addAll(Arrays.asList(aliases));
+    }
+
+    @Nonnull
+    public final List<Parameter> getParameters() {
+      return Lists.newLinkedList(parameters.keySet());
+    }
+
+    public final void addInput(@Nonnull Parameter parameter, @Nonnull String description) {
+      this.parameters.put(parameter, description);
     }
 
     @Nonnull
@@ -157,10 +162,7 @@ public abstract class CommandTree {
       return children;
     }
 
-    @Nonnull
-    public final String getParameterUsage() {
-      return parameterUsage;
-    }
+    // TODO implement Parameter
 
     public final boolean isRoot() {
       return parent == null;
@@ -211,38 +213,72 @@ public abstract class CommandTree {
           }
         }
       }
-      cmds.addAll(onExtraTabComplete(sender, args));
+      for (Parameter param : parameters.keySet()) {
+        cmds.addAll(param.getNextEntries(sender, Arrays.copyOfRange(args, 0, args.length - 1)));
+      }
       List<String> out = Lists.newLinkedList();
       StringUtil.copyPartialMatches(args[args.length - 1], cmds, out);
       Collections.sort(out);
       return out;
     }
 
-    public List<String> onExtraTabComplete(CommandSender sender, String[] args) {
-      return Lists.newLinkedList();
-    }
-
   }
 
-  private static final class HelpCommandNode extends CommandNode implements CommandExecutor {
+  private static final class HelpCommandNode extends CommandNode {
 
     public HelpCommandNode(@Nonnull CommandNode parent) {
       super(parent,
           null,
-          "Command help for " + parent.getFullCommand(),
+          "Get help for this command",
           "help",
-          null,
-          "",
           false);
-      addAliases("?");
       Preconditions.checkNotNull(parent);
+      addAliases("?");
     }
 
     @Override
     public boolean onWrappedCommand(CommandSender sender, Command command, String label, String[] args) {
-      sender.sendMessage(Format.info(getDescription()));
-      // TODO: format help response
+      CommandNode parent = Preconditions.checkNotNull(this.getParent());
+      sender.sendMessage(Format.success("Command Help: " + ChatColor.GRAY + parent.getFullCommand()));
+      for (CommandNode node : parent.getChildren()) {
+        if (node.getPermission().map(sender::hasPermission).orElse(true)) {
+          StringBuilder builder = new StringBuilder();
+          builder.append(ChatColor.GRAY)
+              .append("> ")
+              .append(parent.getPrimaryAlias())
+              .append(" ")
+              .append(ChatColor.AQUA)
+              .append(node.getPrimaryAlias());
+          if (node.getChildren().size() > 1 || !node.getParameters().isEmpty()) {
+            builder.append(" < . . . >");
+          }
+          builder.append(ChatColor.GRAY)
+              .append(": ")
+              .append(ChatColor.WHITE)
+              .append(node.getDescription());
+          sender.sendMessage(builder.toString());
+        }
+      }
+      for (Parameter parameter : parent.getParameters()) {
+        if (parameter.getPermission().filter(sender::hasPermission).isPresent()) {
+          parameter.getFullUsage(sender).ifPresent(usage -> {
+            StringBuilder builder = new StringBuilder();
+            builder.append(ChatColor.GRAY)
+                .append("> ")
+                .append(parent.getPrimaryAlias())
+                .append(" ")
+                .append(ChatColor.AQUA)
+                .append(usage)
+                .append(ChatColor.GRAY)
+                .append(" > ")
+                .append(ChatColor.WHITE)
+                .append(parent.parameters.get(parameter));
+            sender.sendMessage(builder.toString());
+          });
+        }
+      }
       return true;
+
     }
 
   }

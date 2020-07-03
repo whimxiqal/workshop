@@ -27,6 +27,7 @@ package com.pietersvenson.workshop;
 
 import com.pietersvenson.workshop.command.common.CommandTree;
 import com.pietersvenson.workshop.command.WorkshopCommandRoot;
+import com.pietersvenson.workshop.listener.InventoryListener;
 import com.pietersvenson.workshop.listener.PlayerListener;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.state.WorkshopState;
@@ -36,6 +37,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.command.Command;
 import org.bukkit.plugin.java.annotation.command.Commands;
 import org.bukkit.plugin.java.annotation.permission.Permission;
+import org.bukkit.plugin.java.annotation.plugin.ApiVersion;
 import org.bukkit.plugin.java.annotation.plugin.Description;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.Website;
@@ -52,6 +54,7 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author;
         permission = "workshop.command"))
 @Permission(name = "workshop.command", desc = "Allows usage of workshop command")
 @Permission(name = "workshop.staff", desc = "Allows usage of all staff abilities")
+@ApiVersion(ApiVersion.Target.v1_15)
 public final class Workshop extends JavaPlugin {
 
   @Getter
@@ -70,6 +73,7 @@ public final class Workshop extends JavaPlugin {
 
     getLogger().info("Registering listeners...");
     getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+    getServer().getPluginManager().registerEvents(new InventoryListener(), this);
 
     getLogger().info("Loading Previous State...");
     getState().load();

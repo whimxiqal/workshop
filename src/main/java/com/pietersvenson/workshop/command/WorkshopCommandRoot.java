@@ -27,6 +27,9 @@ package com.pietersvenson.workshop.command;
 
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.features.freeze.FreezeCommand;
+import com.pietersvenson.workshop.features.home.HomeCommand;
+import com.pietersvenson.workshop.features.noitem.NoitemCommand;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
 import com.pietersvenson.workshop.util.Reference;
@@ -34,8 +37,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
-
-import java.util.Collections;
 
 public class WorkshopCommandRoot extends CommandTree.CommandNode {
 
@@ -47,11 +48,11 @@ public class WorkshopCommandRoot extends CommandTree.CommandNode {
         null,
         PERMISSION,
         DESCRIPTION,
-        "workshop",
-        Collections.singletonList("ws"),
-        "");
+        "workshop");
+    addAliases("ws");
     addChildren(new FreezeCommand(this));
     addChildren(new HomeCommand(this));
+    addChildren(new NoitemCommand(this));
   }
 
   @Override

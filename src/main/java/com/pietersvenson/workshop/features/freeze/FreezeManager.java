@@ -64,7 +64,7 @@ public class FreezeManager {
   public boolean unfreeze(Player player) {
     boolean out = frozenPlayers.remove(player.getUniqueId());
     if (out) {
-      player.sendMessage(Format.error("You have been unfrozen!"));
+      player.sendMessage(Format.success("You have been unfrozen!"));
     }
     return out;
   }

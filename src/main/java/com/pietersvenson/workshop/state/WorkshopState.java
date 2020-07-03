@@ -29,26 +29,23 @@ import com.google.common.io.Files;
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.features.freeze.FreezeManager;
 import com.pietersvenson.workshop.features.home.HomeManager;
+import com.pietersvenson.workshop.features.noitem.NoitemManager;
 import lombok.Getter;
-import org.bukkit.Bukkit;
+import org.yaml.snakeyaml.error.YAMLException;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public final class WorkshopState {
 
-  @Getter
-  private final FreezeManager freezeManager = new FreezeManager();
+  @Getter private final FreezeManager freezeManager = new FreezeManager();
+  @Getter private final HomeManager homeManager = new HomeManager();
+  @Getter private final NoitemManager noitemManager = new NoitemManager();
 
-  @Getter
-  private final HomeManager homeManager = new HomeManager();
 
   private List<Stateful> getStatefuls() {
     return Arrays.stream(WorkshopState.class.getDeclaredFields())
@@ -69,7 +66,7 @@ public final class WorkshopState {
     getStatefuls().forEach(stateful -> {
       File stateFile = getStateFile(stateful);
       try {
-        Files.write(stateful.getState().getBytes(), stateFile);
+        Files.write(stateful.dumpState().getBytes(), stateFile);
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -81,11 +78,12 @@ public final class WorkshopState {
       File stateFile = getStateFile(stateful);
       try {
         if (stateFile.exists()) {
-          stateful.loadStateful(Files.toString(stateFile, StandardCharsets.UTF_8));
+          stateful.loadState(Files.toString(stateFile, StandardCharsets.UTF_8));
         } else {
           stateFile.createNewFile();
         }
-      } catch (IOException e) {
+      } catch (Exception e) {
+        Workshop.getInstance().getLogger().severe("An error occurred trying to load state data from file: " + stateFile.getAbsolutePath());
         e.printStackTrace();
       }
     });
@@ -93,7 +91,7 @@ public final class WorkshopState {
 
   public static File getStateFile(Stateful stateful) {
     Workshop.getInstance().getDataFolder().mkdirs();
-    return new File(Workshop.getInstance().getDataFolder().getPath() + "/" + stateful.getBasicFileName() + ".yml");
+    return new File(Workshop.getInstance().getDataFolder().getPath() + "/" + stateful.getFileName());
   }
 
 }

@@ -23,18 +23,27 @@
  *
  */
 
-package com.pietersvenson.workshop.state;
+package com.pietersvenson.workshop.util;
 
-import javax.annotation.Nonnull;
+import com.pietersvenson.workshop.Workshop;
+import org.bukkit.Bukkit;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
-public interface Stateful {
+public final class Inventories {
 
-  @Nonnull
-  String getFileName();
+  private Inventories() {
+  }
 
-  @Nonnull
-  String dumpState();
-
-  void loadState(String state) throws Exception;
+  public static void clearBannedItems(Inventory inventory) {
+    Bukkit.getScheduler().runTask(Workshop.getInstance(), () -> {
+      for (int i = 0; i < inventory.getSize(); i++) {
+        ItemStack itemStack = inventory.getItem(i);
+        if (itemStack != null && Workshop.getInstance().getState().getNoitemManager().isBanned(itemStack.getType())) {
+          inventory.clear(i);
+        }
+      }
+    });
+  }
 
 }

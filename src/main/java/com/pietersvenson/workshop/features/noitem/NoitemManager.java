@@ -23,75 +23,88 @@
  *
  */
 
-package com.pietersvenson.workshop.features.home;
+package com.pietersvenson.workshop.features.noitem;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.pietersvenson.workshop.Workshop;
+import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.state.Stateful;
+import com.pietersvenson.workshop.util.Inventories;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
+import org.bukkit.Material;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
-import org.yaml.snakeyaml.nodes.Tag;
 
 import javax.annotation.Nonnull;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-public class HomeManager implements Stateful {
+public class NoitemManager implements Stateful {
 
-  public static final String BASIC_FILE_NAME = "homes";
+  Set<String> banned = Sets.newHashSet();
 
-  Map<UUID, Location> homes = Maps.newHashMap();
-
-  public Optional<Location> getHome(@Nonnull final Player player) {
-    return Optional.ofNullable(homes.get(player.getUniqueId()));
-  }
-
-  public Location putHome(@Nonnull final Player player, @Nonnull final Location location) {
-    return homes.put(player.getUniqueId(), location);
-  }
-
-  public Map<String, Location> getHomesByName() {
-    return this.homes.entrySet()
+  public boolean ban(Material item) {
+    Bukkit.getOnlinePlayers()
         .stream()
-        .collect(Collectors.toMap(entry ->
-            Bukkit.getOfflinePlayer(entry.getKey()).getName(), Map.Entry::getValue));
+        .filter(player -> !player.hasPermission(Permissions.STAFF))
+        .forEach(player -> Inventories.clearBannedItems(player.getInventory()));
+    if (!item.isItem()) {
+      return false;
+    }
+    return this.banned.add(item.toString().toUpperCase());
+  }
+
+  public boolean unban(Material item) {
+    return this.banned.remove(item.toString().toUpperCase());
+  }
+
+  public boolean isBanned(Material item) {
+    return this.banned.contains(item.toString().toUpperCase());
+  }
+
+  public List<Material> getBanned() {
+    return banned.stream()
+        .map(Material::matchMaterial)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
   }
 
   @Nonnull
   @Override
   public String getFileName() {
-    return "homes.yml";
+    return "noitem.yml";
   }
 
   @Nonnull
   @Override
   public String dumpState() {
-    Map<String, Map<String, Object>> serializedState = new TreeMap<>();
-    homes.forEach((uuid, location) -> {
-      serializedState.put(uuid.toString(), location.serialize());
-    });
     DumperOptions dumperOptions = new DumperOptions();
     dumperOptions.setIndent(2);
     dumperOptions.setPrettyFlow(true);
-    return new Yaml(dumperOptions).dump(serializedState);
+    return new Yaml(dumperOptions).dump(banned.toArray());
   }
 
   @Override
   public void loadState(String state) throws YAMLException {
-    homes.clear();
+    List<String> toAdd = Lists.newLinkedList();
     try {
-      new Yaml().<Map<String, Map<String, Object>>>load(state).forEach(
-          (uuid, location) ->
-              homes.put(UUID.fromString(uuid), Location.deserialize(location)));
+      toAdd.addAll(new Yaml().<List<String>>load(state));
     } catch (Exception e) {
       throw new YAMLException(e);
     }
+    banned.clear();
+    toAdd.forEach(name -> {
+      Material material = Material.matchMaterial(name);
+      if (material == null || !ban(material)) {
+        Workshop.getInstance().getLogger().warning(
+            "An invalid or duplicate banned item was found: "
+                + name
+                + ". This has been skipped.");
+      }
+    });
   }
 }

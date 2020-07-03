@@ -27,46 +27,40 @@ package com.pietersvenson.workshop.listener;
 
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.permission.Permissions;
-import com.pietersvenson.workshop.util.Format;
 import com.pietersvenson.workshop.util.Inventories;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCreativeEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
-public class PlayerListener implements Listener {
+public class InventoryListener implements Listener {
+
+
 
   @EventHandler
-  public void onPlayerMove(PlayerMoveEvent playerMoveEvent) {
-    if (Workshop.getInstance().getState().getFreezeManager().isFrozen(playerMoveEvent.getPlayer())) {
-      playerMoveEvent.setCancelled(true);
+  public void onInventoryCreative(InventoryCreativeEvent inventoryCreativeEvent) {
+    if (!inventoryCreativeEvent.getWhoClicked().hasPermission(Permissions.STAFF)) {
+      Inventories.clearBannedItems(inventoryCreativeEvent.getWhoClicked().getInventory());
     }
   }
 
   @EventHandler
-  public void onPlayerJoin(PlayerJoinEvent playerJoinEvent) {
-    if (Workshop.getInstance().getState().getFreezeManager().isAllFrozen()) {
-      Workshop.getInstance().getState().getFreezeManager().freeze(playerJoinEvent.getPlayer());
-    }
-    if (!playerJoinEvent.getPlayer().hasPermission(Permissions.STAFF)) {
-      Inventories.clearBannedItems(playerJoinEvent.getPlayer().getInventory());
+  public void onInventoryClick(InventoryClickEvent inventoryClickEvent) {
+    if (!inventoryClickEvent.getWhoClicked().hasPermission(Permissions.STAFF)) {
+      Inventories.clearBannedItems(inventoryClickEvent.getWhoClicked().getInventory());
     }
   }
 
   @EventHandler
-  public void onPlayerInteract(PlayerInteractEvent playerInteractEvent) {
-    if (Workshop.getInstance().getState().getFreezeManager().isFrozen(playerInteractEvent.getPlayer())) {
-      playerInteractEvent.setCancelled(true);
-    }
-  }
-
-  @EventHandler
-  public void onPlayerChat(AsyncPlayerChatEvent playerChatEvent) {
-    if (Workshop.getInstance().getState().getFreezeManager().isFrozen(playerChatEvent.getPlayer())) {
-      playerChatEvent.setCancelled(true);
-      playerChatEvent.getPlayer().sendMessage(Format.error("You can't chat when you are frozen!"));
+  public void onInventory(PlayerDropItemEvent dropItemEvent) {
+    if (!dropItemEvent.getPlayer().hasPermission(Permissions.STAFF)) {
+      if (Workshop.getInstance().getState().getNoitemManager().isBanned(dropItemEvent.getItemDrop().getItemStack().getType())) {
+        dropItemEvent.getItemDrop().remove();
+      }
     }
   }
 
