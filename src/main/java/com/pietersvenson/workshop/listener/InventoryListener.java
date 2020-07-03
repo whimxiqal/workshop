@@ -29,9 +29,11 @@ import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.permission.Permissions;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.inventory.InventoryHolder;
 
 public class InventoryListener implements Listener {
 
@@ -56,11 +58,23 @@ public class InventoryListener implements Listener {
   }
 
   @EventHandler
-  public void onInventory(PlayerDropItemEvent dropItemEvent) {
+  public void onInventoryDrop(PlayerDropItemEvent dropItemEvent) {
     if (!dropItemEvent.getPlayer().hasPermission(Permissions.STAFF)) {
       if (Workshop.getInstance().getState().getNoitemManager().isBanned(dropItemEvent.getItemDrop().getItemStack().getType())) {
         dropItemEvent.getItemDrop().remove();
       }
+    }
+  }
+
+  @EventHandler
+  public void onInventoryPickup(EntityPickupItemEvent pickupItemEvent) {
+    if ((pickupItemEvent.getEntity() instanceof InventoryHolder)
+        && !pickupItemEvent.getEntity().hasPermission(Permissions.STAFF)
+        && Workshop.getInstance().getState().getNoitemManager().isBanned(pickupItemEvent.getItem().getItemStack().getType())) {
+      Workshop.getInstance()
+          .getState()
+          .getNoitemManager()
+          .scheduledClean(((InventoryHolder) pickupItemEvent.getEntity()).getInventory());
     }
   }
 

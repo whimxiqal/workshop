@@ -186,8 +186,6 @@ public class CommandTree {
       return children;
     }
 
-    // TODO implement Parameter
-
     public final boolean isRoot() {
       return parent == null;
     }
@@ -282,10 +280,13 @@ public class CommandTree {
     }
 
     @Override
-    public boolean onWrappedCommand(@Nonnull CommandSender sender, @Nonnull Command command, @Nonnull String label, @Nonnull String[] args) {
+    public boolean onWrappedCommand(@Nonnull CommandSender sender,
+                                    @Nonnull Command command,
+                                    @Nonnull String label,
+                                    @Nonnull String[] args) {
       CommandNode parent = Preconditions.checkNotNull(this.getParent());
       sender.sendMessage(Format.success(
-          "Command Help: "
+          "Command: "
               + ChatColor.GRAY
               + parent.getFullCommand()));
       for (CommandNode node : parent.getChildren()) {
@@ -298,10 +299,10 @@ public class CommandTree {
               .append(ChatColor.AQUA)
               .append(node.getPrimaryAlias());
           if (node.getChildren().size() > 1 || !node.getParameters().isEmpty()) {
-            builder.append(" < . . . >");
+            builder.append(" [ . . . ]");
           }
           builder.append(ChatColor.GRAY)
-              .append(": ")
+              .append(" > ")
               .append(ChatColor.WHITE)
               .append(node.getDescription());
           sender.sendMessage(builder.toString());

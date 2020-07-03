@@ -150,10 +150,10 @@ public class FreezeCommand extends CommandTree.CommandNode {
           sender.sendMessage(Format.success("Froze all players"));
         }
       } else {
-        if (args[0].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("t")) {
+        if (args[0].equalsIgnoreCase("true") || args[0].equalsIgnoreCase("t")) {
           freezeManager.freezeAll();
           sender.sendMessage(Format.success("Froze all players"));
-        } else if (args[0].equalsIgnoreCase("false") || args[1].equalsIgnoreCase("f")) {
+        } else if (args[0].equalsIgnoreCase("false") || args[0].equalsIgnoreCase("f")) {
           freezeManager.unfreezeAll();
           sender.sendMessage(Format.success("Unfroze all players"));
         } else {

@@ -72,7 +72,6 @@ public class WorkshopCommandRoot extends CommandTree.CommandNode {
       return false;
     }
     sender.sendMessage(ChatColor.GRAY + "# " + Format.THEME + "Workshop " + ChatColor.GRAY + "v." + Reference.VERSION + " #");
-    sender.sendMessage(ChatColor.GRAY + "Author(s): " + ChatColor.AQUA + "Pieter Svenson");
 
     // TODO remove this:
     Workshop.getInstance().getState().save();
