@@ -25,7 +25,6 @@
 
 package com.pietersvenson.workshop.command.common;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.pietersvenson.workshop.util.Format;
@@ -34,6 +33,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -53,7 +53,7 @@ public class CommandTree {
   private CommandNode root;
 
   public CommandTree(@Nonnull CommandNode root) {
-    this.root = Preconditions.checkNotNull(root);
+    this.root = Objects.requireNonNull(root);
   }
 
   public CommandNode root() {
@@ -70,7 +70,7 @@ public class CommandTree {
    */
   public static CommandTree register(@Nonnull JavaPlugin plugin, @Nonnull CommandNode root) {
     CommandTree tree = new CommandTree(root);
-    PluginCommand command = Preconditions.checkNotNull(plugin.getCommand(root.getPrimaryAlias()));
+    PluginCommand command = Objects.requireNonNull(plugin.getCommand(root.getPrimaryAlias()));
     command.setExecutor(root);
     command.setTabCompleter(root);
     root.getPermission().map(Permission::getName).ifPresent(command::setPermission);
@@ -115,8 +115,8 @@ public class CommandTree {
                        @Nonnull String description,
                        @Nonnull String primaryAlias,
                        boolean addHelp) {
-      Preconditions.checkNotNull(description);
-      Preconditions.checkNotNull(primaryAlias);
+      Objects.requireNonNull(description);
+      Objects.requireNonNull(primaryAlias);
       this.parent = parent;
       this.permission = permission;
       this.description = description;
@@ -275,7 +275,7 @@ public class CommandTree {
           "Get help for this command",
           "help",
           false);
-      Preconditions.checkNotNull(parent);
+      Objects.requireNonNull(parent);
       addAliases("?");
     }
 
@@ -284,7 +284,7 @@ public class CommandTree {
                                     @Nonnull Command command,
                                     @Nonnull String label,
                                     @Nonnull String[] args) {
-      CommandNode parent = Preconditions.checkNotNull(this.getParent());
+      CommandNode parent = Objects.requireNonNull(this.getParent());
       sender.sendMessage(Format.success(
           "Command: "
               + ChatColor.GRAY

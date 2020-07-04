@@ -27,6 +27,7 @@ package com.pietersvenson.workshop.state;
 
 import com.google.common.io.Files;
 import com.pietersvenson.workshop.Workshop;
+import com.pietersvenson.workshop.features.classes.ClassroomManager;
 import com.pietersvenson.workshop.features.freeze.FreezeManager;
 import com.pietersvenson.workshop.features.home.HomeManager;
 import com.pietersvenson.workshop.features.noitem.NoitemManager;
@@ -48,7 +49,8 @@ public final class WorkshopState {
   private final HomeManager homeManager = new HomeManager();
   @Getter
   private final NoitemManager noitemManager = new NoitemManager();
-
+  @Getter
+  private final ClassroomManager classroomManager = new ClassroomManager();
 
   private List<Stateful> getStatefuls() {
     return Arrays.stream(WorkshopState.class.getDeclaredFields())

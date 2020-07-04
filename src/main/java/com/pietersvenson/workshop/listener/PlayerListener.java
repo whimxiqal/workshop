@@ -26,6 +26,7 @@
 package com.pietersvenson.workshop.listener;
 
 import com.pietersvenson.workshop.Workshop;
+import com.pietersvenson.workshop.features.classes.Classroom;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
 import org.bukkit.event.EventHandler;
@@ -34,6 +35,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+
+import java.util.List;
 
 public class PlayerListener implements Listener {
 
@@ -51,6 +54,17 @@ public class PlayerListener implements Listener {
     }
     if (!playerJoinEvent.getPlayer().hasPermission(Permissions.STAFF)) {
       Workshop.getInstance().getState().getNoitemManager().scheduledClean(playerJoinEvent.getPlayer().getInventory());
+
+      if (Workshop.getInstance().getState().getClassroomManager().anyRegistered()) {
+        List<Classroom> progressing = Workshop.getInstance().getState().getClassroomManager().getInSession();
+        if (progressing.isEmpty()) {
+          playerJoinEvent.getPlayer().kickPlayer(
+              "There are no classes currently in progress!");
+        } else if (progressing.stream().noneMatch(classroom -> classroom.inClass(playerJoinEvent.getPlayer().getUniqueId()))) {
+          playerJoinEvent.getPlayer().kickPlayer(
+              "You're not registered for this class! Please contact info@einsteinsworkshop.com if you think this is an error.");
+        }
+      }
     }
   }
 

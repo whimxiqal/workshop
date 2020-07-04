@@ -26,6 +26,7 @@
 package com.pietersvenson.workshop.features.freeze;
 
 import com.google.common.collect.Sets;
+import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
 
 import java.util.Set;
@@ -57,6 +58,9 @@ public class FreezeManager {
    * @return true if player was frozen properly
    */
   public boolean freeze(Player player) {
+    if (player.hasPermission(Permissions.STAFF)) {
+      return false;
+    }
     boolean out = frozenPlayers.add(player.getUniqueId());
     if (out) {
       player.sendMessage(Format.error("You have been frozen!"));

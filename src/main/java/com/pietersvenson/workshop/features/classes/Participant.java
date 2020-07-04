@@ -25,5 +25,35 @@
 
 package com.pietersvenson.workshop.features.classes;
 
-public class ClassManager {
+import com.google.common.collect.Maps;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+@Data
+@AllArgsConstructor
+public class Participant {
+
+  private String firstName;
+  private String lastName;
+  private UUID playerUuid;
+
+  public Map<String, String> serialize() {
+    Map<String, String> out = Maps.newTreeMap();
+    out.put("first_name", firstName);
+    out.put("last_name", lastName);
+    out.put("mc_uuid", playerUuid.toString());
+    return out;
+  }
+
+  public static Participant deserialize(Map<String, String> data) {
+    return new Participant(
+        data.get("first_name"),
+        data.get("last_name"),
+        UUID.fromString(data.get("mc_uuid")));
+  }
 }

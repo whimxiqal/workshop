@@ -30,6 +30,7 @@ import com.google.common.collect.Lists;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
@@ -102,8 +103,8 @@ public class Parameter {
    * @return a single merged parameter
    */
   public static Parameter chain(@Nonnull Parameter first, @Nonnull Parameter... others) {
-    Preconditions.checkNotNull(first);
-    Preconditions.checkNotNull(others);
+    Objects.requireNonNull(first);
+    Objects.requireNonNull(others);
     List<Parameter> parameters = Lists.newArrayList(first);
     parameters.addAll(Arrays.asList(others));
     for (int i = 0; i < parameters.size() - 1; i++) {
