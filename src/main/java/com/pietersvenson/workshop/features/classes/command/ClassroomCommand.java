@@ -23,44 +23,29 @@
  *
  */
 
-package com.pietersvenson.workshop.command;
+package com.pietersvenson.workshop.features.classes.command;
 
 import com.pietersvenson.workshop.Workshop;
+import com.pietersvenson.workshop.command.common.CommandError;
 import com.pietersvenson.workshop.command.common.CommandTree;
-import com.pietersvenson.workshop.features.classes.command.ClassroomCommand;
-import com.pietersvenson.workshop.features.freeze.FreezeCommand;
-import com.pietersvenson.workshop.features.home.HomeCommand;
-import com.pietersvenson.workshop.features.noitem.NoitemCommand;
+import com.pietersvenson.workshop.features.classes.ClassroomManager;
 import com.pietersvenson.workshop.permission.Permissions;
-import com.pietersvenson.workshop.util.Format;
-import com.pietersvenson.workshop.util.Reference;
-
-import javax.annotation.Nonnull;
-
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
 
-public class WorkshopCommandRoot extends CommandTree.CommandNode {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-  public static final String DESCRIPTION = "The root command for all Workshop related commands";
-  public static final Permission PERMISSION = Permissions.COMMAND_ROOT;
+public final class ClassroomCommand extends CommandTree.CommandNode {
 
-  /**
-   * Default constructor.
-   */
-  public WorkshopCommandRoot() {
-    super(
-        null,
-        PERMISSION,
-        DESCRIPTION,
-        "workshop");
-    addAliases("ws");
-    addChildren(new FreezeCommand(this),
-        new HomeCommand(this),
-        new NoitemCommand(this),
-        new ClassroomCommand(this));
+  public ClassroomCommand(@Nullable CommandTree.CommandNode parent) {
+    super(parent,
+        Permissions.STAFF,
+        "Manages the classes registered for this server",
+        "class");
+    addChildren(new ClassroomCreateCommand(this),
+        new ClassroomRemoveCommand(this),
+        new ClassroomEditCommand(this));
   }
 
   @Override
@@ -68,15 +53,12 @@ public class WorkshopCommandRoot extends CommandTree.CommandNode {
                                   @Nonnull Command command,
                                   @Nonnull String label,
                                   @Nonnull String[] args) {
-    // TODO: format plugin splash screen
     if (args.length > 0) {
-      sendCommandError(sender, "Unknown command.");
+      sendCommandError(sender, CommandError.UNKNOWN_ARGS);
       return false;
     }
-    sender.sendMessage(ChatColor.GRAY + "# " + Format.THEME + "Workshop " + ChatColor.GRAY + "v." + Reference.VERSION + " #");
-
-    // TODO remove this:
-    Workshop.getInstance().getState().save();
+    ClassroomManager manager = Workshop.getInstance().getState().getClassroomManager();
+    sender.sendMessage("Current classes: " + String.join(", ", manager.getClassroomIds()));
     return true;
   }
 

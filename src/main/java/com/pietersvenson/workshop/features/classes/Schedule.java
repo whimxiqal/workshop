@@ -41,6 +41,10 @@ public class Schedule {
 
   private List<Appointment> appointments = Lists.newArrayList();
 
+  public static Schedule empty() {
+    return new Schedule();
+  }
+
   public static Schedule single(@Nonnull Appointment appointment) {
     Schedule out = new Schedule();
     out.add(Objects.requireNonNull(appointment));

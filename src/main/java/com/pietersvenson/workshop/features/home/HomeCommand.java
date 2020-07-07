@@ -55,12 +55,12 @@ public class HomeCommand extends CommandTree.CommandNode {
         "Teleport to saved locations",
         "home");
     addChildren(new HomeSetCommand(this));
-    addInput(Parameter.builder()
+    addSubcommand(Parameter.builder()
             .supplier(ParameterSuppliers.NONE)
             .permission(Permissions.COMMAND_ROOT)
             .build(),
         "Teleport to your home.");
-    addInput(Parameter.builder()
+    addSubcommand(Parameter.builder()
             .supplier(ParameterSuppliers.ONLINE_PLAYER)
             .permission(Permissions.STAFF)
             .build(),

@@ -23,23 +23,20 @@
  *
  */
 
-package com.pietersvenson.workshop.features.classes;
+package com.pietersvenson.workshop.command.common;
 
-import com.pietersvenson.workshop.command.common.CommandTree;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
+import lombok.Getter;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+public enum CommandError {
 
-public class ClassroomCommand extends CommandTree.CommandNode {
-  public ClassroomCommand(@Nullable CommandTree.CommandNode parent, @Nullable Permission permission, @Nonnull String description, @Nonnull String primaryAlias) {
-    super(parent, permission, description, primaryAlias);
+  FEW_ARGUMENTS("Too few arguments!"),
+  UNKNOWN_ARGS("Unknown argument!");
+
+  @Getter
+  private String message;
+
+  CommandError(String message) {
+    this.message = message;
   }
 
-  @Override
-  public boolean onWrappedCommand(@Nonnull CommandSender sender, @Nonnull Command command, @Nonnull String label, @Nonnull String[] args) {
-    return false;
-  }
 }

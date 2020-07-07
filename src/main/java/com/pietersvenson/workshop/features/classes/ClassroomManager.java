@@ -25,7 +25,6 @@
 
 package com.pietersvenson.workshop.features.classes;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.pietersvenson.workshop.state.Stateful;
@@ -35,12 +34,11 @@ import org.yaml.snakeyaml.error.YAMLException;
 
 import javax.annotation.Nonnull;
 import java.time.Duration;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ClassroomManager implements Stateful {
@@ -52,20 +50,6 @@ public class ClassroomManager implements Stateful {
    * {@link org.bukkit.entity.HumanEntity}
    */
   private Map<String, Classroom> classrooms = Maps.newHashMap();
-  private Map<String, Classroom.Builder> drafts = Maps.newHashMap();
-
-  public ClassroomManager() {
-//    Classroom classroom = Classroom.builder()
-//        .setId("test")
-//        .setCurriculum(Curriculum.ARCHITECTURE)
-//        .setSchedule(Schedule.repeating(
-//            new Appointment(Instant.now(), Instant.now().plus(Duration.of(1, ChronoUnit.HOURS))),
-//            Duration.of(1, ChronoUnit.DAYS),
-//            5))
-//        .addParticipant(new Participant("Pieter", "Svenson", UUID.randomUUID()))
-//        .build();
-//    classrooms.put(classroom.getId(), classroom);
-  }
 
   /**
    * Add a classroom to the global list.
@@ -75,6 +59,10 @@ public class ClassroomManager implements Stateful {
    */
   public Classroom addClassroom(@Nonnull Classroom classroom) {
     return classrooms.put(classroom.getId(), classroom);
+  }
+
+  public Optional<Classroom> getClassroom(@Nonnull String id) {
+    return Optional.ofNullable(classrooms.get(id));
   }
 
   /**
@@ -87,6 +75,10 @@ public class ClassroomManager implements Stateful {
     return classrooms.remove(string);
   }
 
+  public Set<String> getClassroomIds() {
+    return Sets.newHashSet(classrooms.keySet());
+  }
+
   public boolean anyRegistered() {
     return !classrooms.isEmpty();
   }
@@ -96,27 +88,18 @@ public class ClassroomManager implements Stateful {
     return classrooms.values().stream().filter(Classroom::inSession).collect(Collectors.toList());
   }
 
-  public boolean hasDraft(String name) {
-    return drafts.containsKey(name);
-  }
-
-  public Classroom.Builder startDraft(@Nonnull String name) {
-    return drafts.put(name, Classroom.builder());
-  }
-
-  public Classroom.Builder getDraft(String name) {
-    return drafts.get(name);
-  }
-
-  public boolean repeat(String name,
+  public boolean repeat(@Nonnull String name,
                         @Nonnull Duration duration,
                         int count) {
-    Classroom.Builder builder = Objects.requireNonNull(drafts.get(name));
-    Schedule schedule = builder.getSchedule();
-    if (schedule == null || !schedule.isContinuous()) {
+    Classroom classroom = classrooms.get(Objects.requireNonNull(name));
+    if (classroom == null) {
       return false;
     }
-    builder.setSchedule(schedule.repeat(duration, count));
+    Schedule schedule = classroom.getSchedule();
+    if (!schedule.isContinuous()) {
+      return false;
+    }
+    classroom.setSchedule(schedule.repeat(duration, count));
     return true;
   }
 
@@ -124,22 +107,22 @@ public class ClassroomManager implements Stateful {
                         @Nonnull Duration duration,
                         int count,
                         int indexToRepeat) {
-    Classroom.Builder builder = Objects.requireNonNull(drafts.get(name));
-    Schedule schedule = builder.getSchedule();
-    if (schedule == null) {
+    Classroom classroom = classrooms.get(Objects.requireNonNull(name));
+    if (classroom == null) {
       return false;
     }
+    Schedule schedule = classroom.getSchedule();
     if (indexToRepeat < 0) {
       return false;
     }
-    if (schedule.isContinuous()) {
+    if (!schedule.isContinuous()) {
       if (indexToRepeat == 1) {
         return repeat(name, duration, count);
       } else {
         return false;
       }
     }
-    builder.setSchedule(schedule.repeatComponent(duration, count, indexToRepeat));
+    classroom.setSchedule(schedule.repeatComponent(duration, count, indexToRepeat));
     return true;
   }
 

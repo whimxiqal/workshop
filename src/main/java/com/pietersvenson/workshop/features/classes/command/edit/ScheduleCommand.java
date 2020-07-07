@@ -23,37 +23,32 @@
  *
  */
 
-package com.pietersvenson.workshop.features.classes;
+package com.pietersvenson.workshop.features.classes.command.edit;
 
-import com.google.common.collect.Maps;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.permission.Permissions;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-@Data
-@AllArgsConstructor
-public class Participant {
+public class ScheduleCommand extends CommandTree.CommandNode {
 
-  private final String firstName;
-  private final String lastName;
-  private final UUID playerUuid;
-
-  public Map<String, String> serialize() {
-    Map<String, String> out = Maps.newTreeMap();
-    out.put("first_name", firstName);
-    out.put("last_name", lastName);
-    out.put("mc_uuid", playerUuid.toString());
-    return out;
+  public ScheduleCommand(@Nullable CommandTree.CommandNode parent) {
+    super(parent,
+        Permissions.STAFF,
+        "Edits the schedule of the given class",
+        "schedule");
   }
 
-  public static Participant deserialize(Map<String, String> data) {
-    return new Participant(
-        data.get("first_name"),
-        data.get("last_name"),
-        UUID.fromString(data.get("mc_uuid")));
+  @Override
+  public boolean onWrappedCommand(@Nonnull CommandSender sender,
+                                  @Nonnull Command command,
+                                  @Nonnull String label,
+                                  @Nonnull String[] args) {
+    sendCommandError(sender, "Not yet implemented");
+    return true;
   }
+
 }

@@ -162,7 +162,7 @@ public class CommandTree {
       return Lists.newLinkedList(parameters.keySet());
     }
 
-    public final void addInput(@Nonnull Parameter parameter, @Nonnull String description) {
+    public final void addSubcommand(@Nonnull Parameter parameter, @Nonnull String description) {
       this.parameters.put(parameter, description);
     }
 
@@ -191,7 +191,12 @@ public class CommandTree {
     }
 
     public final void sendCommandError(CommandSender sender, String error) {
-      sender.sendMessage(Format.error(error + "\nTry: " + ChatColor.GRAY + "/" + getFullCommand() + " help"));
+      sender.sendMessage(Format.error(error));
+      sender.sendMessage(Format.error("Try: " + ChatColor.GRAY + "/" + getFullCommand() + " help"));
+    }
+
+    public final void sendCommandError(CommandSender sender, CommandError error) {
+      sendCommandError(sender, error.getMessage());
     }
 
     @Override
@@ -309,7 +314,7 @@ public class CommandTree {
         }
       }
       for (Parameter parameter : parent.getParameters()) {
-        if (parameter.getPermission().filter(sender::hasPermission).isPresent()) {
+        if (parameter.getPermission().map(sender::hasPermission).orElse(true)) {
           parameter.getFullUsage(sender).ifPresent(usage -> {
             StringBuilder builder = new StringBuilder();
             builder.append(ChatColor.GRAY)

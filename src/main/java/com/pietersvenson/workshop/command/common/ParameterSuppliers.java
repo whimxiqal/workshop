@@ -26,12 +26,15 @@
 package com.pietersvenson.workshop.command.common;
 
 import com.google.common.collect.Lists;
+import com.pietersvenson.workshop.Workshop;
+import com.pietersvenson.workshop.features.classes.Curriculum;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,6 +73,19 @@ public final class ParameterSuppliers {
         return out;
       })
       .usage("<item>")
+      .build();
+
+  public static final Parameter.ParameterSupplier CURRICULUM = Parameter.ParameterSupplier.builder()
+      .allowedEntries(() -> Arrays.stream(Curriculum.values())
+          .map(curriculum -> curriculum.name().toLowerCase())
+          .collect(Collectors.toList()))
+      .usage("<curriculum>")
+      .build();
+
+  public static final Parameter.ParameterSupplier CLASS_ID = Parameter.ParameterSupplier.builder()
+      .allowedEntries(() ->
+          Workshop.getInstance().getState().getClassroomManager().getClassroomIds())
+      .usage("<id>")
       .build();
 
 }

@@ -53,7 +53,7 @@ public class FreezeCommand extends CommandTree.CommandNode {
         Permissions.STAFF,
         "Immobilize players",
         "freeze");
-    addInput(Parameter.chain(
+    addSubcommand(Parameter.chain(
         Parameter.builder()
             .supplier(ParameterSuppliers.ONLINE_PLAYER)
             .permission(Permissions.STAFF)
@@ -128,7 +128,7 @@ public class FreezeCommand extends CommandTree.CommandNode {
     public FreezeAllCommand(@Nullable CommandTree.CommandNode parent) {
       super(parent, Permissions.STAFF, "Freeze all players", "all");
       addAliases("a");
-      addInput(Parameter.builder()
+      addSubcommand(Parameter.builder()
           .supplier(ParameterSuppliers.BOOLEAN)
           .permission(Permissions.STAFF)
           .build(), "Explicitly immobilize all players");

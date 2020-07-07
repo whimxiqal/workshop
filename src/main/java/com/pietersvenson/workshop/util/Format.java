@@ -32,7 +32,7 @@ public final class Format {
   private Format() {
   }
 
-  public static final ChatColor THEME = ChatColor.YELLOW;
+  public static final ChatColor THEME = ChatColor.DARK_GRAY;
   public static final ChatColor SUCCESS = ChatColor.GREEN;
   public static final ChatColor INFO = ChatColor.WHITE;
   public static final ChatColor WARN = ChatColor.YELLOW;

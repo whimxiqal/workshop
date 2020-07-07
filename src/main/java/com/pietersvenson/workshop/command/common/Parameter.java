@@ -29,6 +29,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -49,6 +50,12 @@ public class Parameter {
   private ParameterSupplier supplier;
   private Permission permission;
   private Parameter next;
+
+  public static Parameter basic(String usage) {
+    return Parameter.builder()
+        .supplier(ParameterSupplier.builder().usage(usage).build())
+        .build();
+  }
 
   /**
    * Gives the supplier of possible accepted inputs for this parameter.
@@ -80,7 +87,7 @@ public class Parameter {
    * @return a list of allowed next inputs
    */
   @Nonnull
-  public List<String> nextAllowedInputs(@Nonnull CommandSender sender, @Nonnull String[] toParse) {
+  public Collection<String> nextAllowedInputs(@Nonnull CommandSender sender, @Nonnull String[] toParse) {
     if (getPermission().isPresent() && !sender.hasPermission(this.permission)) {
       return Lists.newLinkedList();
     }
@@ -131,8 +138,7 @@ public class Parameter {
     Parameter cur = this;
     builder.append(cur.getSupplier().getUsage());
     while (cur.getNext().isPresent()
-        && cur.getNext().get().getPermission().isPresent()
-        && sender.hasPermission(cur.getNext().get().getPermission().get())) {
+        && cur.getNext().get().getPermission().map(sender::hasPermission).orElse(true)) {
       cur = cur.next;
       builder.append(" ");
       builder.append(cur.getSupplier().getUsage());
@@ -142,11 +148,11 @@ public class Parameter {
 
   @Builder
   public static class ParameterSupplier {
-    private final Supplier<List<String>> allowedEntries;
+    private final Supplier<Collection<String>> allowedEntries;
     @Getter
     private final String usage;
 
-    public List<String> getAllowedEntries() {
+    public Collection<String> getAllowedEntries() {
       return Optional.ofNullable(allowedEntries).map(Supplier::get).orElse(Lists.newLinkedList());
     }
 

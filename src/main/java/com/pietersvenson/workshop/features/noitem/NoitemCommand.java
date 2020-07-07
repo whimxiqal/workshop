@@ -26,6 +26,7 @@
 package com.pietersvenson.workshop.features.noitem;
 
 import com.pietersvenson.workshop.Workshop;
+import com.pietersvenson.workshop.command.common.CommandError;
 import com.pietersvenson.workshop.command.common.CommandTree;
 import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
@@ -37,7 +38,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.pietersvenson.workshop.util.Randomer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -55,7 +55,7 @@ public class NoitemCommand extends CommandTree.CommandNode {
         Permissions.STAFF,
         "Ban certain items",
         "noitem");
-    addInput(Parameter.builder()
+    addSubcommand(Parameter.builder()
         .supplier(ParameterSuppliers.ITEM)
         .permission(Permissions.STAFF)
         .build(), "Ban an item");
@@ -69,7 +69,7 @@ public class NoitemCommand extends CommandTree.CommandNode {
                                   @Nonnull String[] args) {
 
     if (args.length == 0) {
-      sendCommandError(sender, "Too few arguments!");
+      sendCommandError(sender, CommandError.FEW_ARGUMENTS);
       return false;
     }
     Material material;

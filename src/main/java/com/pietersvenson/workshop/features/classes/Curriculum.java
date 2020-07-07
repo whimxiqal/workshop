@@ -26,5 +26,6 @@
 package com.pietersvenson.workshop.features.classes;
 
 public enum Curriculum {
+  NONE,
   ARCHITECTURE
 }

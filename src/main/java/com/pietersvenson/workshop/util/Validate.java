@@ -35,6 +35,10 @@ public final class Validate {
   private Validate() {
   }
 
+  public static boolean isKebabCase(String s) {
+    return !Pattern.compile(".*[^a-z\\-].*").matcher(s).find();
+  }
+
   /**
    * Ensures that the input is in the kebab case format.
    *
@@ -43,9 +47,17 @@ public final class Validate {
    * @throws IllegalArgumentException the exception to throw if fails
    */
   public static void checkKebabCase(String s, String errorMessage) throws IllegalArgumentException {
-    if (Pattern.compile(".*[^a-z\\-].*").matcher(s).find()) {
+    if (!isKebabCase(s)) {
       throw new IllegalArgumentException(errorMessage);
     }
+  }
+
+  public static boolean isName(String s) {
+    return !Pattern.compile(".*[^a-zA-Z\\-].*").matcher(s).find();
+  }
+
+  public static boolean isAlphaNumeric(String s) {
+    return !Pattern.compile(".*[^a-zA-Z0-9].*").matcher(s).find();
   }
 
   /**
