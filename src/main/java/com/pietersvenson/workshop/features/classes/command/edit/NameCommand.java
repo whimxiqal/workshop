@@ -75,8 +75,8 @@ public class NameCommand extends CommandTree.CommandNode {
       sender.sendMessage(Format.error("That's already the name of the class!"));
       return false;
     }
-    if (!Validate.isAlphaNumeric(args[1])) {
-      sender.sendMessage(Format.error("The name of this class must only have letters and numbers."));
+    if (!Classroom.isValidName(args[1])) {
+      sender.sendMessage(Format.error("The name of this class must only have letters, numbers, and spaces."));
       return false;
     }
     classroom.get().setName(args[1]);

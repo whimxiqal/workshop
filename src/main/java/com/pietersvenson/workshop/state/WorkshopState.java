@@ -27,9 +27,12 @@ package com.pietersvenson.workshop.state;
 
 import com.google.common.io.Files;
 import com.pietersvenson.workshop.Workshop;
+import com.pietersvenson.workshop.config.ConfigManager;
 import com.pietersvenson.workshop.features.classes.ClassroomManager;
 import com.pietersvenson.workshop.features.freeze.FreezeManager;
 import com.pietersvenson.workshop.features.home.HomeManager;
+import com.pietersvenson.workshop.features.nickname.NicknameManager;
+import com.pietersvenson.workshop.features.nickname.EssentialsNicknameManager;
 import com.pietersvenson.workshop.features.noitem.NoitemManager;
 
 import java.io.File;
@@ -37,12 +40,15 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
 
 public final class WorkshopState {
 
+  @Getter
+  private final ConfigManager configManager = new ConfigManager();
   @Getter
   private final FreezeManager freezeManager = new FreezeManager();
   @Getter
@@ -51,6 +57,8 @@ public final class WorkshopState {
   private final NoitemManager noitemManager = new NoitemManager();
   @Getter
   private final ClassroomManager classroomManager = new ClassroomManager();
+  @Getter
+  private final NicknameManager nicknameManager = NicknameManager.getImplemented();
 
   private List<Stateful> getStatefuls() {
     return Arrays.stream(WorkshopState.class.getDeclaredFields())
@@ -71,35 +79,40 @@ public final class WorkshopState {
    * Save the plugin state to be used across restarts.
    */
   public void save() {
-    getStatefuls().forEach(stateful -> {
-      File stateFile = getStateFile(stateful);
-      try {
-        Files.write(stateful.dumpState().getBytes(), stateFile);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    });
+    getStatefuls().forEach(this::save);
+  }
+
+  public void save(Stateful stateful) {
+    try {
+      getStateFile(stateful).createNewFile();
+      Files.write(stateful.dumpState().getBytes(), getStateFile(stateful));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   /**
-   * Load the plugin state from last session.
+   * Load the plugin state from storage.
    */
-  public void load() {
+  public boolean load() {
+    AtomicBoolean successful = new AtomicBoolean(true);
     getStatefuls().forEach(stateful -> {
       File stateFile = getStateFile(stateful);
       try {
         if (stateFile.exists()) {
           stateful.loadState(Files.toString(stateFile, StandardCharsets.UTF_8));
         } else {
-          stateFile.createNewFile();
+          save(stateful);
         }
       } catch (Exception e) {
         Workshop.getInstance().getLogger().severe(
             "An error occurred trying to load state data from file: "
                 + stateFile.getAbsolutePath());
         e.printStackTrace();
+        successful.set(false);
       }
     });
+    return successful.get();
   }
 
   /**

@@ -23,21 +23,28 @@
  *
  */
 
-package com.pietersvenson.workshop.command.common;
+package com.pietersvenson.workshop.util;
 
-import lombok.Getter;
+import com.pietersvenson.workshop.permission.Permissions;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 
-public enum CommandError {
+import java.util.List;
+import java.util.stream.Collectors;
 
-  FEW_ARGUMENTS("Too few arguments!"),
-  UNKNOWN_ARGS("Unknown argument!"),
-  NO_PLAYER("That player doesn't exist!");
+public final class Communication {
 
-  @Getter
-  private String message;
+  private Communication() {
+  }
 
-  CommandError(String message) {
-    this.message = message;
+  public static void sendStaffMessage(String message) {
+    List<CommandSender> staff = Bukkit.getOnlinePlayers()
+        .stream()
+        .filter(player -> player.hasPermission(Permissions.STAFF))
+        .map(player -> ((CommandSender) player))
+        .collect(Collectors.toList());
+    staff.add(Bukkit.getConsoleSender());
+    staff.forEach(sender -> sender.sendMessage(message));
   }
 
 }

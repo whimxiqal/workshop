@@ -29,6 +29,7 @@ import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandTree;
 import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
+import com.pietersvenson.workshop.config.Settings;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
 
@@ -65,6 +66,7 @@ public class HomeCommand extends CommandTree.CommandNode {
             .permission(Permissions.STAFF)
             .build(),
         "Teleport to the home of <player>");
+    setEnabler(Settings.ENABLE_HOMES::getValue);
   }
 
   @Override

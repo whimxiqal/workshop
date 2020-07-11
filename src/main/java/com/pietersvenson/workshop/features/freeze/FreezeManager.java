@@ -26,16 +26,25 @@
 package com.pietersvenson.workshop.features.freeze;
 
 import com.google.common.collect.Sets;
+import com.pietersvenson.workshop.config.BooleanSetting;
+import com.pietersvenson.workshop.config.Settings;
+import com.pietersvenson.workshop.features.FeatureListener;
+import com.pietersvenson.workshop.features.FeatureManager;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 
-public class FreezeManager {
+import javax.annotation.Nonnull;
+
+public class FreezeManager extends FeatureManager {
 
   private boolean allFrozen;
   private Set<UUID> frozenPlayers = Sets.newHashSet();
@@ -90,4 +99,9 @@ public class FreezeManager {
     return frozenPlayers.contains(player.getUniqueId());
   }
 
+  @Nonnull
+  @Override
+  protected Collection<FeatureListener> getListeners() {
+    return Collections.singleton(new FreezeListener());
+  }
 }

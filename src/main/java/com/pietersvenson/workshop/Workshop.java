@@ -27,8 +27,6 @@ package com.pietersvenson.workshop;
 
 import com.pietersvenson.workshop.command.WorkshopCommandRoot;
 import com.pietersvenson.workshop.command.common.CommandTree;
-import com.pietersvenson.workshop.listener.InventoryListener;
-import com.pietersvenson.workshop.listener.PlayerListener;
 import com.pietersvenson.workshop.state.WorkshopState;
 import com.pietersvenson.workshop.util.Reference;
 import lombok.Getter;
@@ -60,21 +58,25 @@ public final class Workshop extends JavaPlugin {
   private static Workshop instance;
 
   @Getter
-  private final WorkshopState state = new WorkshopState();
+  private WorkshopState state;
 
   @Override
   public void onEnable() {
     Workshop.instance = this;
 
-    getLogger().info("Registering commands...");
-    CommandTree.register(this, new WorkshopCommandRoot());
-
-    getLogger().info("Registering listeners...");
-    getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-    getServer().getPluginManager().registerEvents(new InventoryListener(), this);
+    state = new WorkshopState();
 
     getLogger().info("Loading Previous State...");
     getState().load();
+
+    getLogger().info("Registering commands...");
+    CommandTree.register(this, new WorkshopCommandRoot());
+
+//    getLogger().info("Registering listeners...");
+//    getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+//    getServer().getPluginManager().registerEvents(new InventoryListener(), this);
+
+
 
   }
 

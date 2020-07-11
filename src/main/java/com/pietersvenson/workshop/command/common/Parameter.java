@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 
 import lombok.Builder;
@@ -46,11 +46,12 @@ import org.bukkit.permissions.Permission;
 @Builder
 public class Parameter {
 
-  @NonNull
-  private ParameterSupplier supplier;
+  @NonNull @Builder.Default
+  private ParameterSupplier supplier = ParameterSuppliers.NONE;
   private Permission permission;
   private Parameter next;
 
+  // TODO figure out why the participant add command is using previous command suggestion/completion when basic is used here
   public static Parameter basic(String usage) {
     return Parameter.builder()
         .supplier(ParameterSupplier.builder().usage(usage).build())
@@ -65,9 +66,6 @@ public class Parameter {
    * @return an appropriate {@link ParameterSupplier}
    */
   public ParameterSupplier getSupplier() {
-    if (supplier == null) {
-      return ParameterSuppliers.NONE;
-    }
     return supplier;
   }
 
@@ -88,15 +86,27 @@ public class Parameter {
    */
   @Nonnull
   public Collection<String> nextAllowedInputs(@Nonnull CommandSender sender, @Nonnull String[] toParse) {
+    return nextAllowedInputsHelper(sender, toParse, new String[0]);
+  }
+
+  private Collection<String> nextAllowedInputsHelper(@Nonnull CommandSender sender,
+                                                     @Nonnull String[] toParse,
+                                                     @Nonnull String[] previous) {
     if (getPermission().isPresent() && !sender.hasPermission(this.permission)) {
       return Lists.newLinkedList();
     }
     if (toParse.length == 0) {
-      return supplier.getAllowedEntries();
+      return supplier.getAllowedEntries(Arrays.asList(previous));
     }
-    if (this.supplier.matches(toParse[0])) {
+    if (this.supplier.matches(Arrays.asList(previous), toParse[0])) {
+      String[] newPrevious = Arrays.copyOf(previous, previous.length + 1);
+      newPrevious[newPrevious.length - 1] = toParse[0];
       return getNext()
-          .map(next -> next.nextAllowedInputs(sender, Arrays.copyOfRange(toParse, 1, toParse.length)))
+          .map(next ->
+              next.nextAllowedInputsHelper(
+                  sender,
+                  Arrays.copyOfRange(toParse, 1, toParse.length),
+                  newPrevious))
           .orElse(Lists.newArrayList());
     }
     return Lists.newLinkedList();
@@ -148,16 +158,24 @@ public class Parameter {
 
   @Builder
   public static class ParameterSupplier {
-    private final Supplier<Collection<String>> allowedEntries;
-    @Getter
-    private final String usage;
 
-    public Collection<String> getAllowedEntries() {
-      return Optional.ofNullable(allowedEntries).map(Supplier::get).orElse(Lists.newLinkedList());
+    @Builder.Default
+    private final Function<List<String>, List<String>> allowedEntries = prev -> Lists.newLinkedList();
+    @Getter
+    @Builder.Default
+    private final String usage = "";
+    // True if this parameter is only correct if it's in the allowedEntries
+    @Getter
+    @Builder.Default
+    private boolean strict = true;
+
+    public Collection<String> getAllowedEntries(List<String> previousParameters) {
+      return allowedEntries.apply(previousParameters);
     }
 
-    public boolean matches(String input) {
-      return allowedEntries.get().stream().anyMatch(allowed -> allowed.equalsIgnoreCase(input));
+    public boolean matches(List<String> previousParameters, String input) {
+      List<String> allowedEntriesApplied = allowedEntries.apply(previousParameters);
+      return !strict || allowedEntriesApplied.isEmpty() || allowedEntriesApplied.stream().anyMatch(allowed -> allowed.equalsIgnoreCase(input));
     }
 
   }

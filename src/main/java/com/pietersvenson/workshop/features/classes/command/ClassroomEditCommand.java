@@ -25,21 +25,17 @@
 
 package com.pietersvenson.workshop.features.classes.command;
 
-import com.pietersvenson.workshop.command.common.CommandError;
 import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.command.common.FunctionlessCommandNode;
 import com.pietersvenson.workshop.features.classes.command.edit.CurriculumCommand;
 import com.pietersvenson.workshop.features.classes.command.edit.NameCommand;
-import com.pietersvenson.workshop.features.classes.command.edit.ParticipantCommand;
+import com.pietersvenson.workshop.features.classes.command.edit.ParticipantsCommand;
 import com.pietersvenson.workshop.features.classes.command.edit.ScheduleCommand;
 import com.pietersvenson.workshop.permission.Permissions;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-// TODO finish this class
-public class ClassroomEditCommand extends CommandTree.CommandNode {
+public class ClassroomEditCommand extends FunctionlessCommandNode {
   public ClassroomEditCommand(@Nullable CommandTree.CommandNode parent) {
     super(parent,
         Permissions.STAFF,
@@ -49,16 +45,7 @@ public class ClassroomEditCommand extends CommandTree.CommandNode {
     addChildren(new NameCommand(this),
         new CurriculumCommand(this),
         new ScheduleCommand(this),
-        new ParticipantCommand(this));
-  }
-
-  @Override
-  public boolean onWrappedCommand(@Nonnull CommandSender sender,
-                                  @Nonnull Command command,
-                                  @Nonnull String label,
-                                  @Nonnull String[] args) {
-    sendCommandError(sender, CommandError.FEW_ARGUMENTS);
-    return false;
+        new ParticipantsCommand(this));
   }
 
 }

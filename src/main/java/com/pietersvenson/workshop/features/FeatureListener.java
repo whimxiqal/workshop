@@ -23,21 +23,17 @@
  *
  */
 
-package com.pietersvenson.workshop.command.common;
+package com.pietersvenson.workshop.features;
 
-import lombok.Getter;
+import org.bukkit.event.Listener;
 
-public enum CommandError {
+import javax.annotation.Nonnull;
+import java.util.function.Supplier;
 
-  FEW_ARGUMENTS("Too few arguments!"),
-  UNKNOWN_ARGS("Unknown argument!"),
-  NO_PLAYER("That player doesn't exist!");
+public abstract class FeatureListener extends Enablee implements Listener {
 
-  @Getter
-  private String message;
-
-  CommandError(String message) {
-    this.message = message;
+  protected FeatureListener(@Nonnull Supplier<Boolean> enabler) {
+    super(enabler);
   }
 
 }

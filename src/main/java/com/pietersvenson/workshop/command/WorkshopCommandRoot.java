@@ -30,6 +30,7 @@ import com.pietersvenson.workshop.command.common.CommandTree;
 import com.pietersvenson.workshop.features.classes.command.ClassroomCommand;
 import com.pietersvenson.workshop.features.freeze.FreezeCommand;
 import com.pietersvenson.workshop.features.home.HomeCommand;
+import com.pietersvenson.workshop.features.nickname.NicknameCommand;
 import com.pietersvenson.workshop.features.noitem.NoitemCommand;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
@@ -42,7 +43,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 
-public class WorkshopCommandRoot extends CommandTree.CommandNode {
+public final class WorkshopCommandRoot extends CommandTree.CommandNode {
 
   public static final String DESCRIPTION = "The root command for all Workshop related commands";
   public static final Permission PERMISSION = Permissions.COMMAND_ROOT;
@@ -60,11 +61,14 @@ public class WorkshopCommandRoot extends CommandTree.CommandNode {
     addChildren(new FreezeCommand(this),
         new HomeCommand(this),
         new NoitemCommand(this),
-        new ClassroomCommand(this));
+        new ClassroomCommand(this),
+        new ReloadCommand(this),
+        new NicknameCommand(this, true) // Add config to turn this off
+    );
   }
 
   @Override
-  public boolean onWrappedCommand(@Nonnull CommandSender sender,
+  final public boolean onWrappedCommand(@Nonnull CommandSender sender,
                                   @Nonnull Command command,
                                   @Nonnull String label,
                                   @Nonnull String[] args) {
@@ -74,9 +78,6 @@ public class WorkshopCommandRoot extends CommandTree.CommandNode {
       return false;
     }
     sender.sendMessage(ChatColor.GRAY + "# " + Format.THEME + "Workshop " + ChatColor.GRAY + "v." + Reference.VERSION + " #");
-
-    // TODO remove this:
-    Workshop.getInstance().getState().save();
     return true;
   }
 

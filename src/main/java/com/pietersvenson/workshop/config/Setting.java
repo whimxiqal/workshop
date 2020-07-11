@@ -23,21 +23,40 @@
  *
  */
 
-package com.pietersvenson.workshop.command.common;
+package com.pietersvenson.workshop.config;
 
-import lombok.Getter;
+import javax.annotation.Nonnull;
+import java.util.Objects;
 
-public enum CommandError {
+public class Setting {
 
-  FEW_ARGUMENTS("Too few arguments!"),
-  UNKNOWN_ARGS("Unknown argument!"),
-  NO_PLAYER("That player doesn't exist!");
+  private final String path;
+  private final Object defaultValue;
+  private Object value;
 
-  @Getter
-  private String message;
+  Setting(@Nonnull String path, @Nonnull Object defaultValue) {
+    this.path = Objects.requireNonNull(path);
+    this.defaultValue = Objects.requireNonNull(defaultValue);
+    this.value = Objects.requireNonNull(defaultValue);
+  }
 
-  CommandError(String message) {
-    this.message = message;
+  @Nonnull
+  public String getPath() {
+    return path;
+  }
+
+  @Nonnull
+  public Object getDefaultValue() {
+    return defaultValue;
+  }
+
+  public void setValue(@Nonnull Object value) {
+    this.value = Objects.requireNonNull(value);
+  }
+
+  @Nonnull
+  public Object getValue() {
+    return value;
   }
 
 }

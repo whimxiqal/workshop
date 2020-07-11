@@ -29,6 +29,7 @@ import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandTree;
 import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
+import com.pietersvenson.workshop.config.Settings;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
 
@@ -64,6 +65,7 @@ public class FreezeCommand extends CommandTree.CommandNode {
             .build()),
         "Freeze a specific player");
     addChildren(new FreezeAllCommand(this));
+    setEnabler(Settings.ENABLE_FREEZE::getValue);
   }
 
   @Override

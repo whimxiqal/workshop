@@ -23,21 +23,26 @@
  *
  */
 
-package com.pietersvenson.workshop.command.common;
+package com.pietersvenson.workshop.features;
 
-import lombok.Getter;
+import javax.annotation.Nonnull;
+import java.util.Objects;
+import java.util.function.Supplier;
 
-public enum CommandError {
+public class Enablee {
 
-  FEW_ARGUMENTS("Too few arguments!"),
-  UNKNOWN_ARGS("Unknown argument!"),
-  NO_PLAYER("That player doesn't exist!");
+  private Supplier<Boolean> enabler;
 
-  @Getter
-  private String message;
+  protected Enablee(@Nonnull Supplier<Boolean> enabler) {
+    this.enabler = Objects.requireNonNull(enabler);
+  }
 
-  CommandError(String message) {
-    this.message = message;
+  public Boolean enabled() {
+    return enabler.get();
+  }
+
+  public void setEnabler(@Nonnull Supplier<Boolean> enabler) {
+    this.enabler = Objects.requireNonNull(enabler);
   }
 
 }

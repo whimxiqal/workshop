@@ -28,9 +28,14 @@ package com.pietersvenson.workshop.features.noitem;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.pietersvenson.workshop.Workshop;
+import com.pietersvenson.workshop.config.Settings;
+import com.pietersvenson.workshop.features.FeatureListener;
+import com.pietersvenson.workshop.features.FeatureManager;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.state.Stateful;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -45,7 +50,7 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 
-public class NoitemManager implements Stateful {
+public class NoitemManager extends FeatureManager implements Stateful {
 
   Set<String> banned = Sets.newHashSet();
 
@@ -56,10 +61,12 @@ public class NoitemManager implements Stateful {
    * @return true if addition was successful
    */
   public boolean ban(Material item) {
-    Bukkit.getOnlinePlayers()
-        .stream()
-        .filter(player -> !player.hasPermission(Permissions.STAFF))
-        .forEach(player -> scheduledClean(player.getInventory()));
+    if (Settings.ENABLE_NOITEM.getValue()) {
+      Bukkit.getOnlinePlayers()
+          .stream()
+          .filter(player -> !player.hasPermission(Permissions.STAFF))
+          .forEach(player -> scheduledClean(player.getInventory()));
+    }
     if (!item.isItem()) {
       return false;
     }
@@ -142,4 +149,11 @@ public class NoitemManager implements Stateful {
       }
     });
   }
+
+  @Nonnull
+  @Override
+  protected Collection<FeatureListener> getListeners() {
+    return Collections.singleton(new NoitemListener());
+  }
+
 }

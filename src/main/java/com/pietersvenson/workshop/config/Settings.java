@@ -23,21 +23,21 @@
  *
  */
 
-package com.pietersvenson.workshop.command.common;
+package com.pietersvenson.workshop.config;
 
-import lombok.Getter;
+/**
+ * An enumeration of all Settings. No need to register anywhere, that's done dynamically.
+ */
+public final class Settings {
 
-public enum CommandError {
-
-  FEW_ARGUMENTS("Too few arguments!"),
-  UNKNOWN_ARGS("Unknown argument!"),
-  NO_PLAYER("That player doesn't exist!");
-
-  @Getter
-  private String message;
-
-  CommandError(String message) {
-    this.message = message;
+  private Settings() {
   }
+
+  public static final BooleanSetting ENABLE_CLASSES = new BooleanSetting("features.classes.enable", true);
+  public static final BooleanSetting ENABLE_NICKNAME_PARTICIPANTS = new BooleanSetting("features.classes.nickname-participants", true);
+  public static final BooleanSetting ENABLE_FREEZE = new BooleanSetting("features.freeze.enable", true);
+  public static final BooleanSetting ENABLE_NICKNAME_COMMAND = new BooleanSetting("features.nicknames.enable", true);
+  public static final BooleanSetting ENABLE_HOMES = new BooleanSetting("features.homes.enable", true);
+  public static final BooleanSetting ENABLE_NOITEM = new BooleanSetting("features.noitem.enable", true);
 
 }

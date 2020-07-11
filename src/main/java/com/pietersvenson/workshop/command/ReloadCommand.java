@@ -23,21 +23,33 @@
  *
  */
 
-package com.pietersvenson.workshop.command.common;
+package com.pietersvenson.workshop.command;
 
-import lombok.Getter;
+import com.pietersvenson.workshop.Workshop;
+import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.permission.Permissions;
+import com.pietersvenson.workshop.util.Format;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 
-public enum CommandError {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-  FEW_ARGUMENTS("Too few arguments!"),
-  UNKNOWN_ARGS("Unknown argument!"),
-  NO_PLAYER("That player doesn't exist!");
+public class ReloadCommand extends CommandTree.CommandNode {
 
-  @Getter
-  private String message;
+  public ReloadCommand(@Nullable CommandTree.CommandNode parent) {
+    super(parent, Permissions.STAFF, "Reload all Workshop related data", "reload");
+  }
 
-  CommandError(String message) {
-    this.message = message;
+  @Override
+  public boolean onWrappedCommand(@Nonnull CommandSender sender, @Nonnull Command command, @Nonnull String label, @Nonnull String[] args) {
+    if (Workshop.getInstance().getState().load()) {
+      sender.sendMessage(Format.success("Data loaded!"));
+      return true;
+    } else {
+      sender.sendMessage(Format.error("An error occurred loading the data. Check the console for more information."));
+      return false;
+    }
   }
 
 }

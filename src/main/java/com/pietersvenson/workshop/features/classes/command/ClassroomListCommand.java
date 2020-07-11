@@ -26,31 +26,30 @@
 package com.pietersvenson.workshop.features.classes.command;
 
 import com.pietersvenson.workshop.Workshop;
-import com.pietersvenson.workshop.command.common.CommandError;
 import com.pietersvenson.workshop.command.common.CommandTree;
-import com.pietersvenson.workshop.command.common.Parameter;
+import com.pietersvenson.workshop.features.classes.Appointment;
 import com.pietersvenson.workshop.features.classes.Classroom;
 import com.pietersvenson.workshop.features.classes.ClassroomManager;
+import com.pietersvenson.workshop.features.classes.Schedule;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
-import com.pietersvenson.workshop.util.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
+import java.util.List;
 
-public class ClassroomCreateCommand extends CommandTree.CommandNode {
-
-  public ClassroomCreateCommand(@Nullable CommandTree.CommandNode parent) {
+public class ClassroomListCommand extends CommandTree.CommandNode {
+  public ClassroomListCommand(@Nullable CommandTree.CommandNode parent) {
     super(parent,
         Permissions.STAFF,
-        "Establish a new class",
-        "create");
-    addAliases("c");
-    addSubcommand(Parameter.basic("<id>"), "Id of the class, which cannot be changed.");
-
+        "List all registered classes",
+        "list");
   }
 
   @Override
@@ -58,24 +57,33 @@ public class ClassroomCreateCommand extends CommandTree.CommandNode {
                                   @Nonnull Command command,
                                   @Nonnull String label,
                                   @Nonnull String[] args) {
-    if (args.length < 1) {
-      sendCommandError(sender, CommandError.FEW_ARGUMENTS);
-      return false;
-    }
-    if (!Validate.isKebabCase(args[0])) {
-      sendCommandError(sender, "The id of this class must only have lower case letters, numbers, and hyphens.");
-      return false;
-    }
     ClassroomManager manager = Workshop.getInstance().getState().getClassroomManager();
-    if (manager.getClassroom(args[0]).isPresent()) {
-      sendCommandError(sender, "A classroom by this name already exists.");
-      return false;
+    if (manager.getClassroomIds().isEmpty()) {
+      sender.sendMessage(Format.success("No classes have been created yet"));
+    } else {
+      sender.sendMessage(Format.success("Classes:"));
+      for (String id : manager.getClassroomIds()) {
+        if (!manager.getClassroom(id).isPresent()) {
+          continue;
+        }
+        Schedule schedule = manager.getClassroom(id).get().getSchedule();
+
+        // TODO verify formatting
+        String out = ChatColor.GRAY + "- " + ChatColor.AQUA + id + ": " + ChatColor.RESET;
+        if (schedule.getStatus() == Schedule.Status.EMPTY) {
+          out += "No appointments";
+        } else if (schedule.getStatus() == Schedule.Status.PRE) {
+          out += "Starts on " + new SimpleDateFormat("yy/MM/dd").format(Date.from(schedule.getAppointments().getFirst().getStart()))
+              + "; "
+              + schedule.getAppointments().size() + " appointments";
+        } else if (schedule.getStatus() == Schedule.Status.DURING) {
+          out += "In Progress; " + schedule.getAppointments().stream().filter(app -> Instant.now().isBefore(app.getEnd())).count() + " appointments remaining";
+        } else {
+          out += "Completed on " + new SimpleDateFormat("yy/MM/dd").format(Date.from(schedule.getAppointments().getLast().getEnd()));
+        }
+        sender.sendMessage(out);
+      }
     }
-    manager.addClassroom(new Classroom(args[0]));
-    sender.sendMessage(Format.success("You created the class "
-        + ChatColor.GRAY + args[0]
-        + Format.SUCCESS + ". Use other class commands to add a schedule and participants."));
     return true;
   }
-
 }

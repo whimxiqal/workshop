@@ -25,7 +25,23 @@
 
 package com.pietersvenson.workshop.util;
 
+import com.google.common.collect.Lists;
+import com.pietersvenson.workshop.Workshop;
+import com.pietersvenson.workshop.features.classes.Classroom;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 public final class Format {
 
@@ -37,25 +53,66 @@ public final class Format {
   public static final ChatColor INFO = ChatColor.WHITE;
   public static final ChatColor WARN = ChatColor.YELLOW;
   public static final ChatColor ERROR = ChatColor.RED;
-
-  public static String prefix() {
-    return THEME + "Workshop % ";
-  }
+  public static final ChatColor STAFF = ChatColor.AQUA;
+  public static final String PREFIX = THEME + "Workshop % " + ChatColor.RESET;
 
   public static String success(String message) {
-    return prefix() + SUCCESS + message;
+    return PREFIX + SUCCESS + message;
   }
 
   public static String info(String message) {
-    return prefix() + INFO + message;
+    return PREFIX + INFO + message;
   }
 
   public static String warn(String message) {
-    return prefix() + WARN + message;
+    return PREFIX + WARN + message;
   }
 
   public static String error(String message) {
-    return prefix() + ERROR + message;
+    return PREFIX + ERROR + message;
+  }
+
+  public static String formatInstantVerbose(Instant instant) {
+    return new SimpleDateFormat("E, MMM dd yyyy, hh:mm aa zz").format(Date.from(instant));
+  }
+
+  public static Instant parseInstantVerbose(String source) throws ParseException {
+    return new SimpleDateFormat("E, MMM dd yyyy, hh:mm aa zz").parse(source).toInstant();
+  }
+
+  public static String[] combineQuotedArguments(String[] input) {
+    String full = String.join(" ", input);
+    LinkedList<String> out = Lists.newLinkedList();
+    boolean inEncloser = false;
+    StringBuilder arg = new StringBuilder();
+    for (char c : full.toCharArray()) {
+      if (c == ' ') {
+        if (inEncloser) {
+          arg.append(c);
+        } else {
+          out.add(arg.toString());
+          arg = new StringBuilder();
+        }
+      } else if (c == '"') {
+        inEncloser = !inEncloser;
+        if (!arg.toString().isEmpty()) {
+          out.add(arg.toString());
+        }
+        arg = new StringBuilder();
+      } else {
+        arg.append(c);
+      }
+    }
+    if (!arg.toString().isEmpty()) {
+      out.add(arg.toString());
+    }
+    return out.toArray(new String[0]);
+  }
+
+  public static String participantDisplayName(Classroom.Participant participant, String username) {
+    return participant.getFirstName().substring(0, 1).toUpperCase()
+        + participant.getFirstName().substring(1).toLowerCase()
+        + participant.getLastName().substring(0, 1).toUpperCase();
   }
 
 }

@@ -26,8 +26,13 @@
 package com.pietersvenson.workshop.features.home;
 
 import com.google.common.collect.Maps;
+import com.pietersvenson.workshop.config.Settings;
+import com.pietersvenson.workshop.features.FeatureListener;
+import com.pietersvenson.workshop.features.FeatureManager;
 import com.pietersvenson.workshop.state.Stateful;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -42,7 +47,7 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 
-public class HomeManager implements Stateful {
+public class HomeManager extends FeatureManager implements Stateful {
 
   Map<UUID, Location> homes = Maps.newHashMap();
 
@@ -100,5 +105,11 @@ public class HomeManager implements Stateful {
     } catch (Exception e) {
       throw new YAMLException(e);
     }
+  }
+
+  @Nonnull
+  @Override
+  protected Collection<FeatureListener> getListeners() {
+    return Collections.emptyList();
   }
 }

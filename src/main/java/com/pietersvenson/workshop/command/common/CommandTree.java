@@ -27,6 +27,7 @@ package com.pietersvenson.workshop.command.common;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.pietersvenson.workshop.features.Enablee;
 import com.pietersvenson.workshop.util.Format;
 
 import java.util.Arrays;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -77,7 +79,10 @@ public class CommandTree {
     return tree;
   }
 
-  public abstract static class CommandNode implements CommandExecutor, TabCompleter {
+  public abstract static class CommandNode extends Enablee implements CommandExecutor, TabCompleter {
+
+    public static final int ARG_MAX_LENGTH = 20;
+
     private final CommandNode parent;
     private final Permission permission;
     private final String description;
@@ -97,7 +102,7 @@ public class CommandTree {
                        @Nullable Permission permission,
                        @Nonnull String description,
                        @Nonnull String primaryAlias) {
-      this(parent, permission, description, primaryAlias, true);
+      this(parent, permission, description, primaryAlias, true, () -> true);
 
     }
 
@@ -114,7 +119,9 @@ public class CommandTree {
                        @Nullable Permission permission,
                        @Nonnull String description,
                        @Nonnull String primaryAlias,
-                       boolean addHelp) {
+                       boolean addHelp,
+                       Supplier<Boolean> enabler) {
+      super(enabler);
       Objects.requireNonNull(description);
       Objects.requireNonNull(primaryAlias);
       this.parent = parent;
@@ -204,21 +211,43 @@ public class CommandTree {
                                    @Nonnull Command command,
                                    @Nonnull String label,
                                    @Nonnull String[] args) {
+      if (!enabled()) {
+        sender.sendMessage(Format.error("This command is not enabled"));
+        return false;
+      }
+
+      // Adds support for quotations around space-delimited arguments
+      String[] actualArgs;
+      if (isRoot()) {
+        actualArgs = Format.combineQuotedArguments(args);
+        for (String arg : actualArgs) {
+          if (arg.length() > ARG_MAX_LENGTH) {
+            sender.sendMessage(Format.error("Arguments cannot exceed "
+                + ARG_MAX_LENGTH
+                + " characters!"));
+            return false;
+          }
+        }
+      } else {
+        actualArgs = Arrays.copyOf(args, args.length);
+      }
+
+      // Main method
       if (this.permission != null && !sender.hasPermission(this.permission)) {
         sender.sendMessage(Format.error("You don't have permission to do this!"));
         return false;
       }
-      if (args.length < 1) {
-        return onWrappedCommand(sender, command, label, args);
+      if (actualArgs.length < 1) {
+        return onWrappedCommand(sender, command, label, actualArgs);
       }
       for (CommandNode child : children) {
         for (String alias : child.aliases) {
-          if (alias.equalsIgnoreCase(args[0])) {
-            return child.onCommand(sender, command, child.getPrimaryAlias(), Arrays.copyOfRange(args, 1, args.length));
+          if (alias.equalsIgnoreCase(actualArgs[0])) {
+            return child.onCommand(sender, command, child.getPrimaryAlias(), Arrays.copyOfRange(actualArgs, 1, actualArgs.length));
           }
         }
       }
-      return onWrappedCommand(sender, command, label, args);
+      return onWrappedCommand(sender, command, label, actualArgs);
     }
 
     public abstract boolean onWrappedCommand(@Nonnull CommandSender sender,
@@ -232,6 +261,9 @@ public class CommandTree {
                                             @Nonnull String label,
                                             @Nonnull String[] args) {
       List<String> cmds = Lists.newLinkedList();
+      if (!enabled()) {
+        return cmds;
+      }
       if (this.permission != null && !sender.hasPermission(this.permission)) {
         return cmds; // empty
       }
@@ -279,7 +311,8 @@ public class CommandTree {
           null,
           "Get help for this command",
           "help",
-          false);
+          false,
+          () -> true);
       Objects.requireNonNull(parent);
       addAliases("?");
     }

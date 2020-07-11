@@ -26,9 +26,11 @@
 package com.pietersvenson.workshop.features.classes;
 
 import com.google.common.collect.Maps;
+import com.pietersvenson.workshop.util.Format;
 import lombok.Getter;
 
 import javax.annotation.Nonnull;
+import java.text.ParseException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
@@ -47,8 +49,8 @@ public class Appointment implements Comparable<Appointment> {
     this.end = end;
   }
 
-  public boolean includes(@Nonnull Instant date) {
-    return date.isAfter(start) && date.isBefore(end);
+  public boolean includes(@Nonnull Instant instant) {
+    return !(instant.isAfter(end) || instant.isBefore(start));
   }
 
   public boolean overlaps(@Nonnull Appointment other) {
@@ -65,19 +67,22 @@ public class Appointment implements Comparable<Appointment> {
     return this.start.compareTo(o.getStart());
   }
 
-  public Schedule repeat(@Nonnull Duration duration, int count) {
+  public Schedule repeat(@Nonnull Duration duration, int count) throws Schedule.OverlappingAppointmentException {
     return Schedule.repeating(this, duration, count);
   }
 
-  public Map<String, Long> serialize() {
-    Map<String, Long> out = Maps.newTreeMap();
-    out.put("start", start.getEpochSecond());
-    out.put("end", end.getEpochSecond());
+  public Map<String, String> serialize() {
+    Map<String, String> out = Maps.newTreeMap();
+    out.put("start", Format.formatInstantVerbose(start));
+    out.put("end", Format.formatInstantVerbose(end));
     return out;
   }
 
-  public static Appointment deserialize(Map<String, Integer> data) {
-    return new Appointment(Instant.ofEpochSecond(data.get("start")), Instant.ofEpochSecond(data.get("end")));
+  public static Appointment deserialize(Map<String, String> data) throws ParseException {
+    return new Appointment(Format.parseInstantVerbose(data.get("start")), Format.parseInstantVerbose(data.get("end")));
   }
 
+  public Appointment copy() {
+    return new Appointment(Instant.from(start), Instant.from(end));
+  }
 }

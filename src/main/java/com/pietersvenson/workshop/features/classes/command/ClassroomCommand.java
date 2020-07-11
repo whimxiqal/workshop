@@ -25,18 +25,14 @@
 
 package com.pietersvenson.workshop.features.classes.command;
 
-import com.pietersvenson.workshop.Workshop;
-import com.pietersvenson.workshop.command.common.CommandError;
 import com.pietersvenson.workshop.command.common.CommandTree;
-import com.pietersvenson.workshop.features.classes.ClassroomManager;
+import com.pietersvenson.workshop.command.common.FunctionlessCommandNode;
+import com.pietersvenson.workshop.config.Settings;
 import com.pietersvenson.workshop.permission.Permissions;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public final class ClassroomCommand extends CommandTree.CommandNode {
+public final class ClassroomCommand extends FunctionlessCommandNode {
 
   public ClassroomCommand(@Nullable CommandTree.CommandNode parent) {
     super(parent,
@@ -45,21 +41,10 @@ public final class ClassroomCommand extends CommandTree.CommandNode {
         "class");
     addChildren(new ClassroomCreateCommand(this),
         new ClassroomRemoveCommand(this),
-        new ClassroomEditCommand(this));
-  }
-
-  @Override
-  public boolean onWrappedCommand(@Nonnull CommandSender sender,
-                                  @Nonnull Command command,
-                                  @Nonnull String label,
-                                  @Nonnull String[] args) {
-    if (args.length > 0) {
-      sendCommandError(sender, CommandError.UNKNOWN_ARGS);
-      return false;
-    }
-    ClassroomManager manager = Workshop.getInstance().getState().getClassroomManager();
-    sender.sendMessage("Current classes: " + String.join(", ", manager.getClassroomIds()));
-    return true;
+        new ClassroomEditCommand(this),
+        new ClassroomListCommand(this),
+        new ClassroomInfoCommand(this));
+    setEnabler(Settings.ENABLE_CLASSES::getValue);
   }
 
 }

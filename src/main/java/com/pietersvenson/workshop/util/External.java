@@ -27,13 +27,14 @@ package com.pietersvenson.workshop.util;
 
 import com.pietersvenson.workshop.Workshop;
 import org.bukkit.Bukkit;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.net.URL;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -41,13 +42,15 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public final class External {
 
   private External() {
   }
 
-  public static CompletableFuture<Optional<UUID>> getPlayer(String username) {
+  public static CompletableFuture<Optional<UUID>> getPlayerUuid(String username) {
     CompletableFuture<Optional<UUID>> out = CompletableFuture.supplyAsync(() -> {
       try {
         URL obj = new URL("https://api.mojang.com/users/profiles/minecraft/" + username);
@@ -90,10 +93,57 @@ public final class External {
       return Optional.empty();
     });
 
-    Bukkit.getScheduler().runTask(Workshop.getInstance(), () -> {
+    Bukkit.getScheduler().runTaskAsynchronously(Workshop.getInstance(), () -> {
       try {
-        out.get();
-      } catch (InterruptedException | ExecutionException e) {
+        out.get(2, TimeUnit.SECONDS);
+      } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        e.printStackTrace();
+      }
+    });
+
+    return out;
+
+  }
+
+  public static CompletableFuture<Optional<String>> getPlayerName(UUID uuid) {
+    CompletableFuture<Optional<String>> out = CompletableFuture.supplyAsync(() -> {
+      try {
+        URL obj = new URL("https://api.mojang.com/user/profiles/" + uuid.toString().replace("-", "") + "/names");
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        con.setRequestMethod("GET");
+        int responseCode = con.getResponseCode();
+        String response;
+        if (responseCode == HttpURLConnection.HTTP_OK) { // success
+          BufferedReader in = new BufferedReader(new InputStreamReader(
+              con.getInputStream()));
+          String inputLine;
+          StringBuilder responseBuilder = new StringBuilder();
+
+          while ((inputLine = in.readLine()) != null) {
+            responseBuilder.append(inputLine);
+          }
+          in.close();
+
+          response = responseBuilder.toString();
+        } else {
+          return Optional.empty();
+        }
+        if (response.isEmpty()) {
+          return Optional.empty();
+        }
+        JSONArray historyArray = (JSONArray) JSONValue.parseWithException(response);
+        return Optional.of(((JSONObject) historyArray.get(historyArray.size() - 1)).get("name").toString());
+      } catch (IOException | ParseException e) {
+        e.printStackTrace();
+      }
+
+      return Optional.empty();
+    });
+
+    Bukkit.getScheduler().runTaskAsynchronously(Workshop.getInstance(), () -> {
+      try {
+        out.get(2, TimeUnit.SECONDS);
+      } catch (InterruptedException | ExecutionException | TimeoutException e) {
         e.printStackTrace();
       }
     });

@@ -23,37 +23,19 @@
  *
  */
 
-package com.pietersvenson.workshop.features.classes;
+package com.pietersvenson.workshop.config;
 
-import com.google.common.collect.Maps;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import javax.annotation.Nonnull;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+public class BooleanSetting extends Setting {
 
-@Data
-@AllArgsConstructor
-public class Participant {
-
-  private final String firstName;
-  private final String lastName;
-  private final UUID playerUuid;
-
-  public Map<String, String> serialize() {
-    Map<String, String> out = Maps.newTreeMap();
-    out.put("first_name", firstName);
-    out.put("last_name", lastName);
-    out.put("mc_uuid", playerUuid.toString());
-    return out;
+  BooleanSetting(@Nonnull String path, @Nonnull Boolean defaultValue) {
+    super(path, defaultValue);
   }
 
-  public static Participant deserialize(Map<String, String> data) {
-    return new Participant(
-        data.get("first_name"),
-        data.get("last_name"),
-        UUID.fromString(data.get("mc_uuid")));
+  @Nonnull
+  @Override
+  public Boolean getValue() {
+    return (Boolean) super.getValue();
   }
 }

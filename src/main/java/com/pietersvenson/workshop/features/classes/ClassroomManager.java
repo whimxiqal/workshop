@@ -25,23 +25,29 @@
 
 package com.pietersvenson.workshop.features.classes;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import com.pietersvenson.workshop.config.BooleanSetting;
+import com.pietersvenson.workshop.config.Settings;
+import com.pietersvenson.workshop.features.FeatureListener;
+import com.pietersvenson.workshop.features.FeatureManager;
 import com.pietersvenson.workshop.state.Stateful;
+import org.bukkit.event.Listener;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import javax.annotation.Nonnull;
 import java.time.Duration;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ClassroomManager implements Stateful {
+public class ClassroomManager extends FeatureManager implements Stateful {
 
   /**
    * The draft of the 'schedule' this operator is editing.
@@ -75,11 +81,11 @@ public class ClassroomManager implements Stateful {
     return classrooms.remove(string);
   }
 
-  public Set<String> getClassroomIds() {
-    return Sets.newHashSet(classrooms.keySet());
+  public List<String> getClassroomIds() {
+    return Lists.newLinkedList(classrooms.keySet());
   }
 
-  public boolean anyRegistered() {
+  public boolean hasAny() {
     return !classrooms.isEmpty();
   }
 
@@ -90,7 +96,7 @@ public class ClassroomManager implements Stateful {
 
   public boolean repeat(@Nonnull String name,
                         @Nonnull Duration duration,
-                        int count) {
+                        int count) throws Schedule.OverlappingAppointmentException {
     Classroom classroom = classrooms.get(Objects.requireNonNull(name));
     if (classroom == null) {
       return false;
@@ -106,7 +112,7 @@ public class ClassroomManager implements Stateful {
   public boolean repeat(String name,
                         @Nonnull Duration duration,
                         int count,
-                        int indexToRepeat) {
+                        int indexToRepeat) throws Schedule.OverlappingAppointmentException {
     Classroom classroom = classrooms.get(Objects.requireNonNull(name));
     if (classroom == null) {
       return false;
@@ -156,9 +162,15 @@ public class ClassroomManager implements Stateful {
       throw new YAMLException(e);
     }
     classrooms.clear();
-    toAdd.forEach((s, map) -> {
-      Classroom deserialized = Classroom.deserialize(s, map);
+    for (Map.Entry<String, Map<String, Object>> entry : toAdd.entrySet()) {
+      Classroom deserialized = Classroom.deserialize(entry.getKey(), entry.getValue());
       classrooms.put(deserialized.getId(), deserialized);
-    });
+    }
+  }
+
+  @Nonnull
+  @Override
+  protected Collection<FeatureListener> getListeners() {
+    return Lists.newArrayList(new ClassroomListener(), new ClassroomNicknameListener());
   }
 }

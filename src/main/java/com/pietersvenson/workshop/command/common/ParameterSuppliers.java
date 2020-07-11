@@ -32,11 +32,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Registry;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public final class ParameterSuppliers {
 
@@ -49,19 +55,20 @@ public final class ParameterSuppliers {
       .build();
 
   public static final Parameter.ParameterSupplier ONLINE_PLAYER = Parameter.ParameterSupplier.builder()
-      .allowedEntries(() ->
+      .allowedEntries(prev ->
           Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()))
       .usage("<player>")
+      .strict(false)
       .build();
 
   public static final Parameter.ParameterSupplier BOOLEAN = Parameter.ParameterSupplier.builder()
-      .allowedEntries(() ->
+      .allowedEntries(prev ->
           Lists.newArrayList("true", "false", "t", "f"))
       .usage("true|false")
       .build();
 
   public static final Parameter.ParameterSupplier ITEM = Parameter.ParameterSupplier.builder()
-      .allowedEntries(() -> {
+      .allowedEntries(prev -> {
         List<String> out = Lists.newLinkedList();
         Lists.newLinkedList(Registry.MATERIAL)
             .stream()
@@ -76,16 +83,60 @@ public final class ParameterSuppliers {
       .build();
 
   public static final Parameter.ParameterSupplier CURRICULUM = Parameter.ParameterSupplier.builder()
-      .allowedEntries(() -> Arrays.stream(Curriculum.values())
+      .allowedEntries(prev -> Arrays.stream(Curriculum.values())
           .map(curriculum -> curriculum.name().toLowerCase())
           .collect(Collectors.toList()))
       .usage("<curriculum>")
       .build();
 
   public static final Parameter.ParameterSupplier CLASS_ID = Parameter.ParameterSupplier.builder()
-      .allowedEntries(() ->
+      .allowedEntries(prev ->
           Workshop.getInstance().getState().getClassroomManager().getClassroomIds())
-      .usage("<id>")
+      .usage("<class>")
+      .build();
+
+  public static final Parameter.ParameterSupplier CLASS_START_DATE = Parameter.ParameterSupplier.builder()
+      .allowedEntries(prev -> IntStream.range(-10, 30)
+          .mapToObj(integer ->
+              new SimpleDateFormat("YY/MM/dd").format(Date.from(Instant.now().plus(Duration.of(integer, ChronoUnit.DAYS)))))
+          .collect(Collectors.toList()))
+      .usage("<start-date>")
+      .strict(false)
+      .build();
+
+  public static final Parameter.ParameterSupplier CLASS_END_DATE = Parameter.ParameterSupplier.builder()
+      .allowedEntries(prev -> IntStream.range(-10, 30)
+          .mapToObj(integer ->
+              new SimpleDateFormat("YY/MM/dd").format(Date.from(Instant.now().plus(Duration.of(integer, ChronoUnit.DAYS)))))
+          .collect(Collectors.toList()))
+      .usage("<end-date>")
+      .strict(false)
+      .build();
+
+  public static final Parameter.ParameterSupplier CLASS_START_TIME = Parameter.ParameterSupplier.builder()
+      .allowedEntries(prev -> {
+        List<String> out = Lists.newLinkedList();
+        for (int i = 0; i < 48; i++) {
+          DecimalFormat df = new DecimalFormat("00");
+          out.add(df.format(i / 2) + ":" + df.format((i % 2) * 30));
+        }
+        return out;
+      })
+      .usage("<start-time>")
+      .strict(false)
+      .build();
+
+  public static final Parameter.ParameterSupplier CLASS_END_TIME = Parameter.ParameterSupplier.builder()
+      .allowedEntries(prev -> {
+        List<String> out = Lists.newLinkedList();
+        for (int i = 0; i < 48; i++) {
+          DecimalFormat df = new DecimalFormat("00");
+          out.add(df.format(i / 2) + ":" + df.format((i % 2) * 30));
+        }
+        return out;
+      })
+      .usage("<end-time>")
+      .strict(false)
       .build();
 
 }

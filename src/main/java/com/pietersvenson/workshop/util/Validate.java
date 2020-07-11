@@ -36,7 +36,7 @@ public final class Validate {
   }
 
   public static boolean isKebabCase(String s) {
-    return !Pattern.compile(".*[^a-z\\-].*").matcher(s).find();
+    return !s.isEmpty() && !Pattern.compile(".*[^a-z0-9\\-].*").matcher(s).find();
   }
 
   /**
@@ -53,11 +53,11 @@ public final class Validate {
   }
 
   public static boolean isName(String s) {
-    return !Pattern.compile(".*[^a-zA-Z\\-].*").matcher(s).find();
+    return !s.isEmpty() && !Pattern.compile(".*[^a-zA-Z\\-].*").matcher(s).find();
   }
 
   public static boolean isAlphaNumeric(String s) {
-    return !Pattern.compile(".*[^a-zA-Z0-9].*").matcher(s).find();
+    return !s.isEmpty() && !Pattern.compile(".*[^a-zA-Z0-9].*").matcher(s).find();
   }
 
   /**
@@ -67,9 +67,8 @@ public final class Validate {
    * @param errorMessage the error message to throw if fails
    * @throws IllegalArgumentException the exception to throw if fails
    */
-  public static void checkConfigFormat(String s, String errorMessage)
-      throws IllegalArgumentException {
-    if (Pattern.compile(".*[^a-z\\-\\.].*").matcher(s).find()) {
+  public static void checkConfigFormat(String s, String errorMessage) throws IllegalArgumentException {
+    if (s.isEmpty() || Pattern.compile(".*[^a-z\\-\\.].*").matcher(s).find()) {
       throw new IllegalArgumentException(errorMessage);
     }
   }
