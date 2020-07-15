@@ -23,39 +23,31 @@
  *
  */
 
-package com.pietersvenson.workshop.features.classes.command.edit;
+package com.pietersvenson.workshop.features.spawn;
 
 import com.pietersvenson.workshop.Workshop;
-import com.pietersvenson.workshop.command.common.CommandError;
 import com.pietersvenson.workshop.command.common.CommandTree;
-import com.pietersvenson.workshop.command.common.Parameter;
-import com.pietersvenson.workshop.command.common.ParameterSuppliers;
-import com.pietersvenson.workshop.features.classes.Classroom;
-import com.pietersvenson.workshop.features.classes.ClassroomManager;
-import com.pietersvenson.workshop.features.classes.Curriculum;
+import com.pietersvenson.workshop.config.Settings;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-public class CurriculumCommand extends CommandTree.CommandNode {
+public final class SpawnCommand extends CommandTree.CommandNode {
 
-  public CurriculumCommand(@Nullable CommandTree.CommandNode parent) {
+  public SpawnCommand(@Nullable CommandTree.CommandNode parent) {
     super(parent,
-        Permissions.STAFF,
-        "Edits the curriculum of the given class",
-        "curriculum");
-    addSubcommand(Parameter.builder()
-            .supplier(ParameterSuppliers.CLASS_ID)
-            .next(Parameter.builder()
-                .supplier(ParameterSuppliers.CURRICULUM)
-                .build())
-            .build(),
-        "The current name of this class");
+        Permissions.COMMAND_ROOT,
+        "Go to the custom set spawnpoint",
+        "spawn");
+    addChildren(new SpawnSetCommand(this));
+    setEnabler(Settings.ENABLE_SPAWN::getValue);
   }
 
   @Override
@@ -63,27 +55,42 @@ public class CurriculumCommand extends CommandTree.CommandNode {
                                   @Nonnull Command command,
                                   @Nonnull String label,
                                   @Nonnull String[] args) {
-    ClassroomManager manager = Workshop.getInstance().getState().getClassroomManager();
-    if (args.length < 2) {
-      sendCommandError(sender, CommandError.FEW_ARGUMENTS);
+    if (!(sender instanceof Player)) {
+      sender.sendMessage(Format.error("Only players may execute this command!"));
       return false;
     }
-    Optional<Classroom> classroom = manager.getClassroom(args[0]);
-    if (!classroom.isPresent()) {
-      sender.sendMessage(Format.error("That class doesn't exist yet!"));
+    Player player = (Player) sender;
+
+    Optional<Location> spawn = Workshop.getInstance().getState().getSpawnManager().getSpawn();
+    if (spawn.isPresent()) {
+      player.teleport(spawn.get());
+      player.sendMessage(Format.success("Teleported!"));
+      return true;
+    } else {
+      player.sendMessage(Format.error("No spawnpoint has been set yet!"));
       return false;
     }
-    Curriculum curriculum;
-    try {
-      curriculum = Curriculum.valueOf(args[1].toUpperCase());
-    } catch (IllegalArgumentException e) {
-      sender.sendMessage(Format.warn("That curriculum isn't currently supported."));
+  }
+
+  static final class SpawnSetCommand extends CommandTree.CommandNode {
+
+    public SpawnSetCommand(@Nullable CommandTree.CommandNode parent) {
+      super(parent, Permissions.STAFF, "Set the spawnpoint", "set");
+    }
+
+    @Override
+    public boolean onWrappedCommand(@Nonnull CommandSender sender,
+                                    @Nonnull Command command,
+                                    @Nonnull String label,
+                                    @Nonnull String[] args) {
+      if (!(sender instanceof Player)) {
+        sender.sendMessage(Format.error("Only players may execute this command!"));
+        return false;
+      }
+      Workshop.getInstance().getState().getSpawnManager().setSpawn(((Player) sender).getLocation());
+      sender.sendMessage(Format.success("Spawn set!"));
       return false;
     }
-    classroom.get().setCurriculum(curriculum);
-    sender.sendMessage(Format.success("Curriculum set!"));
-    Workshop.getInstance().saveStateSynchronous();
-    return true;
   }
 
 }

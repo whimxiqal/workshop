@@ -61,16 +61,18 @@ public class NoitemManager extends FeatureManager implements Stateful {
    * @return true if addition was successful
    */
   public boolean ban(Material item) {
+    if (!item.isItem()) {
+      return false;
+    }
+    boolean out = this.banned.add(item.toString().toUpperCase());
+    Workshop.getInstance().saveStateSynchronous();
     if (Settings.ENABLE_NOITEM.getValue()) {
       Bukkit.getOnlinePlayers()
           .stream()
           .filter(player -> !player.hasPermission(Permissions.STAFF))
           .forEach(player -> scheduledClean(player.getInventory()));
     }
-    if (!item.isItem()) {
-      return false;
-    }
-    return this.banned.add(item.toString().toUpperCase());
+    return out;
   }
 
   /**
@@ -80,7 +82,9 @@ public class NoitemManager extends FeatureManager implements Stateful {
    * @return true if removal was successful
    */
   public boolean unban(Material item) {
-    return this.banned.remove(item.toString().toUpperCase());
+    boolean out = this.banned.remove(item.toString().toUpperCase());
+    Workshop.getInstance().saveStateSynchronous();
+    return out;
   }
 
   public boolean isBanned(Material item) {

@@ -26,7 +26,6 @@
 package com.pietersvenson.workshop.features;
 
 import com.pietersvenson.workshop.Workshop;
-import com.pietersvenson.workshop.config.BooleanSetting;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;

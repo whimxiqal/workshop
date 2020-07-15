@@ -26,8 +26,6 @@
 package com.pietersvenson.workshop.features.freeze;
 
 import com.google.common.collect.Sets;
-import com.pietersvenson.workshop.config.BooleanSetting;
-import com.pietersvenson.workshop.config.Settings;
 import com.pietersvenson.workshop.features.FeatureListener;
 import com.pietersvenson.workshop.features.FeatureManager;
 import com.pietersvenson.workshop.permission.Permissions;
@@ -40,7 +38,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 
 import javax.annotation.Nonnull;
 

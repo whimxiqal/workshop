@@ -120,6 +120,7 @@ public class ParticipantsCommand extends CommandTree.CommandNode {
                 nameOp.ifPresent(out::setLastKnownUsername));
         classroom.get().addParticipant(out);
         sender.sendMessage(Format.success("Player added!"));
+        Workshop.getInstance().saveStateSynchronous();
       });
       return true;
     }

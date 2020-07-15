@@ -23,19 +23,18 @@
  *
  */
 
-package com.pietersvenson.workshop.config;
+package com.pietersvenson.workshop.features;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
+import java.util.Collections;
 
-public class BooleanSetting extends Setting {
-
-  BooleanSetting(@Nonnull String path, @Nonnull Boolean defaultValue) {
-    super(path, defaultValue);
-  }
+public abstract class DeafFeatureManager extends FeatureManager {
 
   @Nonnull
   @Override
-  public Boolean getValue() {
-    return (Boolean) super.getValue();
+  protected final Collection<FeatureListener> getListeners() {
+    return Collections.emptyList();
   }
+
 }

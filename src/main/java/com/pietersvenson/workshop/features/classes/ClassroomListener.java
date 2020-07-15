@@ -54,6 +54,7 @@ public class ClassroomListener extends FeatureListener {
 
     if (!player.hasPermission(Permissions.STAFF)) {
 
+
       // Ensure they are allowed in the server
       if (Workshop.getInstance().getState().getClassroomManager().hasAny()) {
         if (progressing.isEmpty()) {

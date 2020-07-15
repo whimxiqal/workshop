@@ -28,13 +28,17 @@ package com.pietersvenson.workshop.config;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public class Setting {
+public class Setting<T> {
 
   private final String path;
-  private final Object defaultValue;
-  private Object value;
+  private final T defaultValue;
+  private T value;
+  private Class<T> clazz;
 
-  Setting(@Nonnull String path, @Nonnull Object defaultValue) {
+  Setting(@Nonnull String path, @Nonnull T defaultValue, @Nonnull Class<T> clazz) {
+    if (!clazz.isInstance(defaultValue)) {
+      throw new IllegalArgumentException("The value must match the class type");
+    }
     this.path = Objects.requireNonNull(path);
     this.defaultValue = Objects.requireNonNull(defaultValue);
     this.value = Objects.requireNonNull(defaultValue);
@@ -46,16 +50,16 @@ public class Setting {
   }
 
   @Nonnull
-  public Object getDefaultValue() {
-    return defaultValue;
+  public T getDefaultValue() {
+    return clazz.cast(defaultValue);
   }
 
-  public void setValue(@Nonnull Object value) {
+  public void setValue(@Nonnull T value) {
     this.value = Objects.requireNonNull(value);
   }
 
   @Nonnull
-  public Object getValue() {
+  public T getValue() {
     return value;
   }
 

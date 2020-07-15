@@ -32,6 +32,9 @@ import com.pietersvenson.workshop.features.freeze.FreezeCommand;
 import com.pietersvenson.workshop.features.home.HomeCommand;
 import com.pietersvenson.workshop.features.nickname.NicknameCommand;
 import com.pietersvenson.workshop.features.noitem.NoitemCommand;
+import com.pietersvenson.workshop.features.spawn.SpawnCommand;
+import com.pietersvenson.workshop.features.teleport.TeleportAcceptCommand;
+import com.pietersvenson.workshop.features.teleport.TeleportRequestCommand;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
 import com.pietersvenson.workshop.util.Reference;
@@ -63,7 +66,10 @@ public final class WorkshopCommandRoot extends CommandTree.CommandNode {
         new NoitemCommand(this),
         new ClassroomCommand(this),
         new ReloadCommand(this),
-        new NicknameCommand(this, true) // Add config to turn this off
+        new NicknameCommand(this),
+        new SpawnCommand(this),
+        new TeleportAcceptCommand(this),
+        new TeleportRequestCommand(this)
     );
   }
 

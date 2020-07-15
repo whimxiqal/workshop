@@ -23,39 +23,37 @@
  *
  */
 
-package com.pietersvenson.workshop.features.classes.command.edit;
+package com.pietersvenson.workshop.features.teleport;
 
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandError;
 import com.pietersvenson.workshop.command.common.CommandTree;
 import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
-import com.pietersvenson.workshop.features.classes.Classroom;
-import com.pietersvenson.workshop.features.classes.ClassroomManager;
-import com.pietersvenson.workshop.features.classes.Curriculum;
+import com.pietersvenson.workshop.config.Settings;
 import com.pietersvenson.workshop.permission.Permissions;
+import com.pietersvenson.workshop.util.External;
 import com.pietersvenson.workshop.util.Format;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Optional;
 
-public class CurriculumCommand extends CommandTree.CommandNode {
+public class TeleportRequestCommand extends CommandTree.CommandNode {
 
-  public CurriculumCommand(@Nullable CommandTree.CommandNode parent) {
-    super(parent,
-        Permissions.STAFF,
-        "Edits the curriculum of the given class",
-        "curriculum");
+
+  public TeleportRequestCommand(@Nullable CommandTree.CommandNode parent) {
+    super(parent, Permissions.COMMAND_ROOT, "Request teleports", "tpr");
+    addAliases("tp");
+    addAliases("teleport");
     addSubcommand(Parameter.builder()
-            .supplier(ParameterSuppliers.CLASS_ID)
-            .next(Parameter.builder()
-                .supplier(ParameterSuppliers.CURRICULUM)
-                .build())
+            .supplier(ParameterSuppliers.ONLINE_PLAYER)
             .build(),
-        "The current name of this class");
+        "Request a teleport to another online player");
+    setEnabler(Settings.ENABLE_TELEPORTING::getValue);
   }
 
   @Override
@@ -63,27 +61,37 @@ public class CurriculumCommand extends CommandTree.CommandNode {
                                   @Nonnull Command command,
                                   @Nonnull String label,
                                   @Nonnull String[] args) {
-    ClassroomManager manager = Workshop.getInstance().getState().getClassroomManager();
-    if (args.length < 2) {
+    if (!(sender instanceof Player)) {
+      sender.sendMessage(Format.error("Only players may execute that command!"));
+      return false;
+    }
+    Player requester = (Player) sender;
+
+    if (args.length < 1) {
       sendCommandError(sender, CommandError.FEW_ARGUMENTS);
       return false;
     }
-    Optional<Classroom> classroom = manager.getClassroom(args[0]);
-    if (!classroom.isPresent()) {
-      sender.sendMessage(Format.error("That class doesn't exist yet!"));
-      return false;
-    }
-    Curriculum curriculum;
-    try {
-      curriculum = Curriculum.valueOf(args[1].toUpperCase());
-    } catch (IllegalArgumentException e) {
-      sender.sendMessage(Format.warn("That curriculum isn't currently supported."));
-      return false;
-    }
-    classroom.get().setCurriculum(curriculum);
-    sender.sendMessage(Format.success("Curriculum set!"));
-    Workshop.getInstance().saveStateSynchronous();
+
+    External.getPlayerUuid(args[0]).thenAccept(uuid -> {
+      if (!uuid.isPresent()) {
+        sendCommandError(sender, CommandError.NO_PLAYER);
+        return;
+      }
+      if (uuid.get().equals(requester.getUniqueId())) {
+        sendCommandError(sender, "You can't request an teleport from yourself!");
+        return;
+      }
+      Player destination = Bukkit.getPlayer(uuid.get());
+      if (destination == null) {
+        sender.sendMessage(Format.error("The server couldn't find that player!"));
+        return;
+      }
+      Workshop.getInstance().getState().getTeleportManager().request(requester.getUniqueId(), uuid.get());
+      requester.sendMessage(Format.success("Request sent!"));
+      destination.sendMessage(Format.success(requester.getName() + " has requested to teleport to you"));
+    });
     return true;
+
   }
 
 }

@@ -34,7 +34,6 @@ import com.pietersvenson.workshop.features.classes.Classroom;
 import com.pietersvenson.workshop.features.classes.ClassroomManager;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
-import com.pietersvenson.workshop.util.Validate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -81,6 +80,7 @@ public class NameCommand extends CommandTree.CommandNode {
     }
     classroom.get().setName(args[1]);
     sender.sendMessage(Format.success("Class name set!"));
+    Workshop.getInstance().saveStateSynchronous();
     return true;
   }
 

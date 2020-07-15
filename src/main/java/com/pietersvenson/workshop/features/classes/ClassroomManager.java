@@ -27,12 +27,10 @@ package com.pietersvenson.workshop.features.classes;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.pietersvenson.workshop.config.BooleanSetting;
-import com.pietersvenson.workshop.config.Settings;
+import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.features.FeatureListener;
 import com.pietersvenson.workshop.features.FeatureManager;
 import com.pietersvenson.workshop.state.Stateful;
-import org.bukkit.event.Listener;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -40,7 +38,6 @@ import org.yaml.snakeyaml.error.YAMLException;
 import javax.annotation.Nonnull;
 import java.time.Duration;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -64,7 +61,9 @@ public class ClassroomManager extends FeatureManager implements Stateful {
    * @return the preexisting classroom with the given id, or null of none exists
    */
   public Classroom addClassroom(@Nonnull Classroom classroom) {
-    return classrooms.put(classroom.getId(), classroom);
+    Classroom out = classrooms.put(classroom.getId(), classroom);
+    Workshop.getInstance().saveStateSynchronous();
+    return out;
   }
 
   public Optional<Classroom> getClassroom(@Nonnull String id) {
@@ -78,7 +77,9 @@ public class ClassroomManager extends FeatureManager implements Stateful {
    * @return the classroom which was removed, or null if none was removed
    */
   public Classroom removeClassroom(@Nonnull String string) {
-    return classrooms.remove(string);
+    Classroom out = classrooms.remove(string);
+    Workshop.getInstance().saveStateSynchronous();
+    return out;
   }
 
   public List<String> getClassroomIds() {
@@ -106,6 +107,7 @@ public class ClassroomManager extends FeatureManager implements Stateful {
       return false;
     }
     classroom.setSchedule(schedule.repeat(duration, count));
+    Workshop.getInstance().saveStateSynchronous();
     return true;
   }
 
@@ -129,6 +131,7 @@ public class ClassroomManager extends FeatureManager implements Stateful {
       }
     }
     classroom.setSchedule(schedule.repeatComponent(duration, count, indexToRepeat));
+    Workshop.getInstance().saveStateSynchronous();
     return true;
   }
 

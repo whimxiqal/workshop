@@ -46,11 +46,11 @@ import javax.annotation.Nullable;
 public final class NicknameCommand extends FunctionlessCommandNode {
 
 
-  public NicknameCommand(@Nullable CommandTree.CommandNode parent, boolean active) {
+  public NicknameCommand(@Nullable CommandTree.CommandNode parent) {
     super(parent,
         Permissions.STAFF,
         "Manage nicknames in the server",
-        "nickname", true, active);
+        "nickname");
     addAliases("nick");
     addChildren(new NicknameSetCommand(this),
         new NicknameRemoveCommand(this));

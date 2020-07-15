@@ -30,6 +30,7 @@ import com.pietersvenson.workshop.command.common.CommandTree;
 import com.pietersvenson.workshop.state.WorkshopState;
 import com.pietersvenson.workshop.util.Reference;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.command.Command;
 import org.bukkit.plugin.java.annotation.command.Commands;
@@ -87,6 +88,10 @@ public final class Workshop extends JavaPlugin {
     getState().save();
 
     getLogger().info("Goodbye!");
+  }
+
+  public void saveStateSynchronous() {
+    Bukkit.getScheduler().runTask(Workshop.getInstance(), () -> state.save());
   }
 
 }

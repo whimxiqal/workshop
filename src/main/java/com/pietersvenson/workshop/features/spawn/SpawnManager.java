@@ -23,74 +23,48 @@
  *
  */
 
-package com.pietersvenson.workshop.features.home;
+package com.pietersvenson.workshop.features.spawn;
 
-import com.google.common.collect.Maps;
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.features.FeatureListener;
 import com.pietersvenson.workshop.features.FeatureManager;
 import com.pietersvenson.workshop.state.Stateful;
+import org.bukkit.Location;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.error.YAMLException;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.error.YAMLException;
+public class SpawnManager extends FeatureManager implements Stateful {
 
-public class HomeManager extends FeatureManager implements Stateful {
+  private Map<String, Object> spawn;
 
-  Map<UUID, Location> homes = Maps.newHashMap();
-
-  public Optional<Location> getHome(@Nonnull final Player player) {
-    return Optional.ofNullable(homes.get(player.getUniqueId()));
-  }
-
-  /**
-   * Save a player's home.
-   *
-   * @param player   the player
-   * @param location the previous location
-   * @return
-   */
-  public Optional<Location> setHome(@Nonnull final Player player, @Nonnull final Location location) {
-    Optional<Location> out = Optional.ofNullable(homes.put(player.getUniqueId(), location));
+  public void setSpawn(@Nonnull Location location) {
+    this.spawn = location.serialize();
     Workshop.getInstance().saveStateSynchronous();
-    return out;
   }
 
-  /**
-   * Get the homes keyed by username.
-   *
-   * @return the map of player homes
-   */
-  public Map<String, Location> getHomesByName() {
-    return this.homes.entrySet()
-        .stream()
-        .collect(Collectors.toMap(entry ->
-            Bukkit.getOfflinePlayer(entry.getKey()).getName(), Map.Entry::getValue));
+  public Optional<Location> getSpawn() {
+    return Optional.ofNullable(spawn).map(Location::deserialize);
   }
 
   @Nonnull
   @Override
   public String getFileName() {
-    return "homes.yml";
+    return "spawn.yml";
   }
 
   @Nonnull
   @Override
   public String dumpState() {
     Map<String, Map<String, Object>> serializedState = new TreeMap<>();
-    homes.forEach((uuid, location) -> serializedState.put(uuid.toString(), location.serialize()));
+    serializedState.put("spawn", spawn);
     DumperOptions dumperOptions = new DumperOptions();
     dumperOptions.setIndent(2);
     dumperOptions.setPrettyFlow(true);
@@ -99,11 +73,10 @@ public class HomeManager extends FeatureManager implements Stateful {
 
   @Override
   public void loadState(String state) throws YAMLException {
-    homes.clear();
+    spawn = null;
     try {
-      new Yaml().<Map<String, Map<String, Object>>>load(state).forEach(
-          (uuid, location) ->
-              homes.put(UUID.fromString(uuid), Location.deserialize(location)));
+      Map<String, Map<String, Object>> loaded = new Yaml().<Map<String, Map<String, Object>>>load(state);
+      spawn = loaded.get("spawn");
     } catch (Exception e) {
       throw new YAMLException(e);
     }

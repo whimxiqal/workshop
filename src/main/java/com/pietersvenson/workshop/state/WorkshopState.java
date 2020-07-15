@@ -43,6 +43,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import com.pietersvenson.workshop.features.spawn.SpawnManager;
+import com.pietersvenson.workshop.features.teleport.TeleportManager;
 import lombok.Getter;
 
 public final class WorkshopState {
@@ -59,6 +61,10 @@ public final class WorkshopState {
   private final ClassroomManager classroomManager = new ClassroomManager();
   @Getter
   private final NicknameManager nicknameManager = NicknameManager.getImplemented();
+  @Getter
+  private final SpawnManager spawnManager = new SpawnManager();
+  @Getter
+  private final TeleportManager teleportManager = new TeleportManager();
 
   private List<Stateful> getStatefuls() {
     return Arrays.stream(WorkshopState.class.getDeclaredFields())

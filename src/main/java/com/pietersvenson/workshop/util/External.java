@@ -93,11 +93,11 @@ public final class External {
       return Optional.empty();
     });
 
-    Bukkit.getScheduler().runTaskAsynchronously(Workshop.getInstance(), () -> {
+    Bukkit.getScheduler().runTask(Workshop.getInstance(), () -> {
       try {
         out.get(2, TimeUnit.SECONDS);
       } catch (InterruptedException | ExecutionException | TimeoutException e) {
-        e.printStackTrace();
+        Workshop.getInstance().getLogger().throwing("External.java", "getPlayerUuid(UUID)", e);
       }
     });
 
@@ -134,17 +134,17 @@ public final class External {
         JSONArray historyArray = (JSONArray) JSONValue.parseWithException(response);
         return Optional.of(((JSONObject) historyArray.get(historyArray.size() - 1)).get("name").toString());
       } catch (IOException | ParseException e) {
-        e.printStackTrace();
+        Workshop.getInstance().getLogger().throwing("External.java", "getPlayerName(UUID)", e);
       }
 
       return Optional.empty();
     });
 
-    Bukkit.getScheduler().runTaskAsynchronously(Workshop.getInstance(), () -> {
+    Bukkit.getScheduler().runTask(Workshop.getInstance(), () -> {
       try {
         out.get(2, TimeUnit.SECONDS);
       } catch (InterruptedException | ExecutionException | TimeoutException e) {
-        e.printStackTrace();
+        Workshop.getInstance().getLogger().throwing("External.java", "getPlayerName(UUID)", e);
       }
     });
 

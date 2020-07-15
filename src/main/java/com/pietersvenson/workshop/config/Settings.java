@@ -33,11 +33,14 @@ public final class Settings {
   private Settings() {
   }
 
-  public static final BooleanSetting ENABLE_CLASSES = new BooleanSetting("features.classes.enable", true);
-  public static final BooleanSetting ENABLE_NICKNAME_PARTICIPANTS = new BooleanSetting("features.classes.nickname-participants", true);
-  public static final BooleanSetting ENABLE_FREEZE = new BooleanSetting("features.freeze.enable", true);
-  public static final BooleanSetting ENABLE_NICKNAME_COMMAND = new BooleanSetting("features.nicknames.enable", true);
-  public static final BooleanSetting ENABLE_HOMES = new BooleanSetting("features.homes.enable", true);
-  public static final BooleanSetting ENABLE_NOITEM = new BooleanSetting("features.noitem.enable", true);
+  public static final Setting<Boolean> ENABLE_CLASSES = new Setting<Boolean>("features.classes.enable", true, Boolean.class);
+  public static final Setting<Boolean> ENABLE_NICKNAME_PARTICIPANTS = new Setting<Boolean>("features.classes.nickname-participants", true, Boolean.class);
+  public static final Setting<Boolean> ENABLE_FREEZE = new Setting<Boolean>("features.freeze.enable", true, Boolean.class);
+  public static final Setting<Boolean> ENABLE_NICKNAME_COMMAND = new Setting<Boolean>("features.nicknames.enable", true, Boolean.class);
+  public static final Setting<Boolean> ENABLE_HOMES = new Setting<Boolean>("features.homes.enable", true, Boolean.class);
+  public static final Setting<Boolean> ENABLE_SPAWN = new Setting<Boolean>("features.spawn.enable", true, Boolean.class);
+  public static final Setting<Boolean> ENABLE_NOITEM = new Setting<Boolean>("features.noitem.enable", true, Boolean.class);
+  public static final Setting<Boolean> ENABLE_TELEPORTING = new Setting<Boolean>("features.tprequest.enable", true, Boolean.class);
+  public static final Setting<Integer> TELEPORTING_TIMEOUT = new Setting<>("features.tprequest.timeout", 30, Integer.class);
 
 }

@@ -27,11 +27,13 @@ package com.pietersvenson.workshop.features.nickname;
 
 import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.User;
+import com.pietersvenson.workshop.Workshop;
 import net.ess3.api.events.NickChangeEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -73,24 +75,28 @@ public class EssentialsNicknameManager extends NicknameManager {
 
   @Override
   public void setNickname(@Nonnull UUID playerUuid, @Nonnull String nick) {
-    User user = essentials.getUser(playerUuid);
-    NickChangeEvent nickEvent = new NickChangeEvent(null, user, nick);
-    Bukkit.getServer().getPluginManager().callEvent(nickEvent);
-    if (!nickEvent.isCancelled()) {
-      user.setNickname(nick);
-      user.setDisplayNick();
-    }
+    setNicknameLiteral(playerUuid, Objects.requireNonNull(nick));
   }
 
   @Override
   public void removeNickname(@Nonnull UUID playerUuid) {
+    setNicknameLiteral(playerUuid, null);
+  }
+
+  private void setNicknameLiteral(UUID playerUuid, String nick) {
     User user = essentials.getUser(playerUuid);
-    NickChangeEvent nickEvent = new NickChangeEvent(user, null, null);
-    Bukkit.getServer().getPluginManager().callEvent(nickEvent);
-    if (!nickEvent.isCancelled()) {
-      user.setNickname(null);
-      user.setDisplayNick();
-    }
+    NickChangeEvent nickEvent = new NickChangeEvent(null, user, nick);
+    Bukkit.getScheduler().runTask(Workshop.getInstance(), () -> {
+      try {
+        Bukkit.getServer().getPluginManager().callEvent(nickEvent);
+      } catch (IllegalStateException e) {
+        e.printStackTrace();
+      }
+      if (!nickEvent.isCancelled()) {
+        user.setNickname(nick);
+        user.setDisplayNick();
+      }
+    });
   }
 
 }

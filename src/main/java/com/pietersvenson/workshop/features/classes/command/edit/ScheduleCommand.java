@@ -128,8 +128,8 @@ public class ScheduleCommand extends FunctionlessCommandNode {
             + (classroom.get().getSchedule().getAppointments().size()));
         return false;
       }
-
       sender.sendMessage(Format.success("That appointment was canceled"));
+      Workshop.getInstance().saveStateSynchronous();
       return true;
     }
   }
@@ -297,6 +297,7 @@ public class ScheduleCommand extends FunctionlessCommandNode {
       }
       first.add(second);
       sender.sendMessage(Format.success("Schedule added!"));
+      Workshop.getInstance().saveStateSynchronous();
       return true;
     } catch (Schedule.OverlappingAppointmentException e) {
       // Just verify here, but it shouldn't be called
