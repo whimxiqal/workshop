@@ -27,7 +27,7 @@ package com.pietersvenson.workshop.features.teleport;
 
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandError;
-import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.command.common.CommandNode;
 import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
 import com.pietersvenson.workshop.config.Settings;
@@ -42,13 +42,13 @@ import org.bukkit.entity.Player;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TeleportAcceptCommand extends CommandTree.CommandNode {
-  public TeleportAcceptCommand(@Nullable CommandTree.CommandNode parent) {
+public class TeleportAcceptCommand extends CommandNode {
+  public TeleportAcceptCommand(@Nullable CommandNode parent) {
     super(parent, Permissions.COMMAND_ROOT, "Accept incoming teleport requests", "tpa");
     addAliases("teleportaccept");
     addSubcommand(Parameter.builder().supplier(ParameterSuppliers.ONLINE_PLAYER).build(),
         "Accept a teleport request with a player's username");
-    setEnabler(Settings.ENABLE_TELEPORTING::getValue);
+    setEnabler(Settings.ENABLE_TELEPORTING);
   }
 
   @Override
@@ -82,7 +82,7 @@ public class TeleportAcceptCommand extends CommandTree.CommandNode {
         sender.sendMessage(Format.error("There is no incoming request from that player"));
         return;
       }
-      if (tpManager.expired(requester.getUniqueId(), uuid.get())) {
+      if (tpManager.expired(uuid.get(), destination.getUniqueId())) {
         sender.sendMessage(Format.error("That request has expired!"));
         return;
       }

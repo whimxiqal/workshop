@@ -23,18 +23,35 @@
  *
  */
 
-package com.pietersvenson.workshop.features;
+package com.pietersvenson.workshop.command.common;
 
 import com.pietersvenson.workshop.config.Setting;
-import com.pietersvenson.workshop.config.NullableSettingEnablee;
-import org.bukkit.event.Listener;
+import com.pietersvenson.workshop.permission.Permissions;
+import com.pietersvenson.workshop.util.Format;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public abstract class FeatureListener extends NullableSettingEnablee implements Listener {
+public class EnablerCommandNode extends LambdaCommandNode {
 
-  protected FeatureListener(@Nonnull Setting<Boolean> enablerSetting) {
-    super(enablerSetting);
+  public EnablerCommandNode(@Nonnull CommandNode parent, @Nonnull Setting<Boolean> enablerSetting) {
+    super(parent,
+        Permissions.STAFF,
+        "Enables or disables the feature associated with the "
+            + Format.INFO + parent.getFullCommand()
+            + Format.ERROR + " command",
+        "enable",
+        (sender, args) -> {
+          enablerSetting.setValue(!enablerSetting.getValue());
+          sender.sendMessage(Format.success("The feature associated with the "
+              + Format.INFO + parent.getFullCommand()
+              + Format.SUCCESS + " command has been "
+              + Format.WARN + (enablerSetting.getValue() ? "enabled" : "disabled")));
+          return true;
+        });
   }
 
 }

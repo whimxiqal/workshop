@@ -23,18 +23,57 @@
  *
  */
 
-package com.pietersvenson.workshop.features;
+package com.pietersvenson.workshop.config;
 
-import com.pietersvenson.workshop.config.Setting;
-import com.pietersvenson.workshop.config.NullableSettingEnablee;
-import org.bukkit.event.Listener;
+import com.pietersvenson.workshop.features.Enablee;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Optional;
 
-public abstract class FeatureListener extends NullableSettingEnablee implements Listener {
+public class NullableSettingEnablee implements Enablee {
 
-  protected FeatureListener(@Nonnull Setting<Boolean> enablerSetting) {
-    super(enablerSetting);
+  Setting<Boolean> enablerSetting;
+
+  protected NullableSettingEnablee(@Nullable Setting<Boolean> enablerSetting) {
+    this.enablerSetting = enablerSetting;
+  }
+
+  public boolean hasSetting() {
+    return enablerSetting != null;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return Optional.ofNullable(enablerSetting).map(Setting::getValue).orElse(true);
+  }
+
+  public void setEnabler(@Nullable Setting<Boolean> enablerSetting) {
+    this.enablerSetting = enablerSetting;
+  }
+
+  @Override
+  public final boolean enable() {
+    if (enablerSetting == null) {
+      return false;
+    }
+    if (enablerSetting.getValue()) {
+      return false;
+    }
+    enablerSetting.setValue(true);
+    return true;
+  }
+
+  @Override
+  public final boolean disable() {
+    if (enablerSetting == null) {
+      return false;
+    }
+    if (!enablerSetting.getValue()) {
+      return false;
+    }
+    enablerSetting.setValue(false);
+    return true;
   }
 
 }

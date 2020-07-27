@@ -26,7 +26,7 @@
 package com.pietersvenson.workshop.features.freeze;
 
 import com.pietersvenson.workshop.Workshop;
-import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.command.common.CommandNode;
 import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
 import com.pietersvenson.workshop.config.Settings;
@@ -42,14 +42,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class FreezeCommand extends CommandTree.CommandNode {
+public class FreezeCommand extends CommandNode {
 
   /**
    * Default constructor.
    *
    * @param parent the parent node
    */
-  public FreezeCommand(@Nullable CommandTree.CommandNode parent) {
+  public FreezeCommand(@Nullable CommandNode parent) {
     super(parent,
         Permissions.STAFF,
         "Immobilize players",
@@ -65,7 +65,7 @@ public class FreezeCommand extends CommandTree.CommandNode {
             .build()),
         "Freeze a specific player");
     addChildren(new FreezeAllCommand(this));
-    setEnabler(Settings.ENABLE_FREEZE::getValue);
+    setEnabler(Settings.ENABLE_FREEZE);
   }
 
   @Override
@@ -125,9 +125,9 @@ public class FreezeCommand extends CommandTree.CommandNode {
     return false;
   }
 
-  private static class FreezeAllCommand extends CommandTree.CommandNode {
+  private static class FreezeAllCommand extends CommandNode {
 
-    public FreezeAllCommand(@Nullable CommandTree.CommandNode parent) {
+    public FreezeAllCommand(@Nullable CommandNode parent) {
       super(parent, Permissions.STAFF, "Freeze all players", "all");
       addAliases("a");
       addSubcommand(Parameter.builder()

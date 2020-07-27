@@ -27,7 +27,7 @@ package com.pietersvenson.workshop.features.classes.command.edit;
 
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandError;
-import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.command.common.CommandNode;
 import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
 import com.pietersvenson.workshop.features.classes.Classroom;
@@ -41,9 +41,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-public class NameCommand extends CommandTree.CommandNode {
+public class NameCommand extends CommandNode {
 
-  public NameCommand(@Nullable CommandTree.CommandNode parent) {
+  public NameCommand(@Nullable CommandNode parent) {
     super(parent,
         Permissions.STAFF,
         "Edits the name of the given class",

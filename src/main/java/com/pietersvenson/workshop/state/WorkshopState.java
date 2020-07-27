@@ -44,6 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import com.pietersvenson.workshop.features.spawn.SpawnManager;
+import com.pietersvenson.workshop.features.tectonic.TectonicManager;
 import com.pietersvenson.workshop.features.teleport.TeleportManager;
 import lombok.Getter;
 
@@ -65,6 +66,8 @@ public final class WorkshopState {
   private final SpawnManager spawnManager = new SpawnManager();
   @Getter
   private final TeleportManager teleportManager = new TeleportManager();
+  @Getter
+  private final TectonicManager tectonicManager = new TectonicManager();
 
   private List<Stateful> getStatefuls() {
     return Arrays.stream(WorkshopState.class.getDeclaredFields())

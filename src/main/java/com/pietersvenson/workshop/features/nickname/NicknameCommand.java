@@ -27,7 +27,7 @@ package com.pietersvenson.workshop.features.nickname;
 
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandError;
-import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.command.common.CommandNode;
 import com.pietersvenson.workshop.command.common.FunctionlessCommandNode;
 import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
@@ -46,7 +46,7 @@ import javax.annotation.Nullable;
 public final class NicknameCommand extends FunctionlessCommandNode {
 
 
-  public NicknameCommand(@Nullable CommandTree.CommandNode parent) {
+  public NicknameCommand(@Nullable CommandNode parent) {
     super(parent,
         Permissions.STAFF,
         "Manage nicknames in the server",
@@ -54,12 +54,12 @@ public final class NicknameCommand extends FunctionlessCommandNode {
     addAliases("nick");
     addChildren(new NicknameSetCommand(this),
         new NicknameRemoveCommand(this));
-    setEnabler(Settings.ENABLE_NICKNAME_COMMAND::getValue);
+    setEnabler(Settings.ENABLE_NICKNAME_COMMAND);
   }
 
-  public static final class NicknameSetCommand extends CommandTree.CommandNode {
+  public static final class NicknameSetCommand extends CommandNode {
 
-    public NicknameSetCommand(@Nullable CommandTree.CommandNode parent) {
+    public NicknameSetCommand(@Nullable CommandNode parent) {
       super(parent,
           Permissions.STAFF,
           "Set players' nicknames",
@@ -101,9 +101,9 @@ public final class NicknameCommand extends FunctionlessCommandNode {
     }
   }
 
-  public static final class NicknameRemoveCommand extends CommandTree.CommandNode {
+  public static final class NicknameRemoveCommand extends CommandNode {
 
-    public NicknameRemoveCommand(@Nullable CommandTree.CommandNode parent) {
+    public NicknameRemoveCommand(@Nullable CommandNode parent) {
       super(parent,
           Permissions.STAFF,
           "Removes players' nicknames",

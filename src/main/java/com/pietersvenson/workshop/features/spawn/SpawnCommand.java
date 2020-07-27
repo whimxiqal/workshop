@@ -26,7 +26,7 @@
 package com.pietersvenson.workshop.features.spawn;
 
 import com.pietersvenson.workshop.Workshop;
-import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.command.common.CommandNode;
 import com.pietersvenson.workshop.config.Settings;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
@@ -39,15 +39,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-public final class SpawnCommand extends CommandTree.CommandNode {
+public final class SpawnCommand extends CommandNode {
 
-  public SpawnCommand(@Nullable CommandTree.CommandNode parent) {
+  public SpawnCommand(@Nullable CommandNode parent) {
     super(parent,
         Permissions.COMMAND_ROOT,
         "Go to the custom set spawnpoint",
         "spawn");
     addChildren(new SpawnSetCommand(this));
-    setEnabler(Settings.ENABLE_SPAWN::getValue);
+    setEnabler(Settings.ENABLE_SPAWN);
   }
 
   @Override
@@ -72,9 +72,9 @@ public final class SpawnCommand extends CommandTree.CommandNode {
     }
   }
 
-  static final class SpawnSetCommand extends CommandTree.CommandNode {
+  static final class SpawnSetCommand extends CommandNode {
 
-    public SpawnSetCommand(@Nullable CommandTree.CommandNode parent) {
+    public SpawnSetCommand(@Nullable CommandNode parent) {
       super(parent, Permissions.STAFF, "Set the spawnpoint", "set");
     }
 

@@ -27,7 +27,7 @@ package com.pietersvenson.workshop.features.classes.command;
 
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandError;
-import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.command.common.CommandNode;
 import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.features.classes.Classroom;
 import com.pietersvenson.workshop.features.classes.ClassroomManager;
@@ -41,9 +41,9 @@ import org.bukkit.command.CommandSender;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ClassroomCreateCommand extends CommandTree.CommandNode {
+public class ClassroomCreateCommand extends CommandNode {
 
-  public ClassroomCreateCommand(@Nullable CommandTree.CommandNode parent) {
+  public ClassroomCreateCommand(@Nullable CommandNode parent) {
     super(parent,
         Permissions.STAFF,
         "Establish a new class",

@@ -28,7 +28,7 @@ package com.pietersvenson.workshop.features.classes.command.edit;
 import com.google.common.collect.Lists;
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandError;
-import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.command.common.CommandNode;
 import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
 import com.pietersvenson.workshop.features.classes.Classroom;
@@ -46,10 +46,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class ParticipantsCommand extends CommandTree.CommandNode {
+public class ParticipantsCommand extends CommandNode {
 
 
-  public ParticipantsCommand(@Nullable CommandTree.CommandNode parent) {
+  public ParticipantsCommand(@Nullable CommandNode parent) {
     super(parent,
         Permissions.STAFF,
         "Manage the participant list of a class",
@@ -67,9 +67,9 @@ public class ParticipantsCommand extends CommandTree.CommandNode {
     return false;
   }
 
-  public static class ParticipantsAddCommand extends CommandTree.CommandNode {
+  public static class ParticipantsAddCommand extends CommandNode {
 
-    public ParticipantsAddCommand(@Nullable CommandTree.CommandNode parent) {
+    public ParticipantsAddCommand(@Nullable CommandNode parent) {
       super(parent,
           Permissions.STAFF,
           "Add a participant to this class",
@@ -126,9 +126,9 @@ public class ParticipantsCommand extends CommandTree.CommandNode {
     }
   }
 
-  public static class ParticipantsRemoveCommand extends CommandTree.CommandNode {
+  public static class ParticipantsRemoveCommand extends CommandNode {
 
-    public ParticipantsRemoveCommand(@Nullable CommandTree.CommandNode parent) {
+    public ParticipantsRemoveCommand(@Nullable CommandNode parent) {
       super(parent,
           Permissions.STAFF,
           "Remove a participant from this class",

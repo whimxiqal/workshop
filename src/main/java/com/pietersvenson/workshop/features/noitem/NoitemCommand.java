@@ -27,7 +27,7 @@ package com.pietersvenson.workshop.features.noitem;
 
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandError;
-import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.command.common.CommandNode;
 import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
 import com.pietersvenson.workshop.config.Settings;
@@ -44,14 +44,14 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-public class NoitemCommand extends CommandTree.CommandNode {
+public class NoitemCommand extends CommandNode {
 
   /**
    * Default constructor.
    *
    * @param parent parent node
    */
-  public NoitemCommand(@Nullable CommandTree.CommandNode parent) {
+  public NoitemCommand(@Nullable CommandNode parent) {
     super(parent,
         Permissions.STAFF,
         "Ban certain items",
@@ -61,7 +61,7 @@ public class NoitemCommand extends CommandTree.CommandNode {
         .permission(Permissions.STAFF)
         .build(), "Ban an item");
     addChildren(new NoitemListCommand(this));
-    setEnabler(Settings.ENABLE_NOITEM::getValue);
+    setEnabler(Settings.ENABLE_NOITEM);
   }
 
   @Override
@@ -112,9 +112,9 @@ public class NoitemCommand extends CommandTree.CommandNode {
     return true;
   }
 
-  public static class NoitemListCommand extends CommandTree.CommandNode {
+  public static class NoitemListCommand extends CommandNode {
 
-    NoitemListCommand(@Nullable CommandTree.CommandNode parent) {
+    NoitemListCommand(@Nullable CommandNode parent) {
       super(parent,
           Permissions.STAFF,
           "List all banned items",

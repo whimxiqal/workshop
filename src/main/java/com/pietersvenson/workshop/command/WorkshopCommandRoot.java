@@ -25,8 +25,7 @@
 
 package com.pietersvenson.workshop.command;
 
-import com.pietersvenson.workshop.Workshop;
-import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.command.common.CommandNode;
 import com.pietersvenson.workshop.features.classes.command.ClassroomCommand;
 import com.pietersvenson.workshop.features.freeze.FreezeCommand;
 import com.pietersvenson.workshop.features.home.HomeCommand;
@@ -46,7 +45,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 
-public final class WorkshopCommandRoot extends CommandTree.CommandNode {
+public final class WorkshopCommandRoot extends CommandNode {
 
   public static final String DESCRIPTION = "The root command for all Workshop related commands";
   public static final Permission PERMISSION = Permissions.COMMAND_ROOT;

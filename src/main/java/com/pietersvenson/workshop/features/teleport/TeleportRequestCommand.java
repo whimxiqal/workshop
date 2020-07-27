@@ -27,7 +27,7 @@ package com.pietersvenson.workshop.features.teleport;
 
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandError;
-import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.command.common.CommandNode;
 import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
 import com.pietersvenson.workshop.config.Settings;
@@ -42,10 +42,10 @@ import org.bukkit.entity.Player;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TeleportRequestCommand extends CommandTree.CommandNode {
+public class TeleportRequestCommand extends CommandNode {
 
 
-  public TeleportRequestCommand(@Nullable CommandTree.CommandNode parent) {
+  public TeleportRequestCommand(@Nullable CommandNode parent) {
     super(parent, Permissions.COMMAND_ROOT, "Request teleports", "tpr");
     addAliases("tp");
     addAliases("teleport");
@@ -53,7 +53,7 @@ public class TeleportRequestCommand extends CommandTree.CommandNode {
             .supplier(ParameterSuppliers.ONLINE_PLAYER)
             .build(),
         "Request a teleport to another online player");
-    setEnabler(Settings.ENABLE_TELEPORTING::getValue);
+    setEnabler(Settings.ENABLE_TELEPORTING);
   }
 
   @Override

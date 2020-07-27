@@ -33,14 +33,15 @@ public final class Settings {
   private Settings() {
   }
 
-  public static final Setting<Boolean> ENABLE_CLASSES = new Setting<Boolean>("features.classes.enable", true, Boolean.class);
-  public static final Setting<Boolean> ENABLE_NICKNAME_PARTICIPANTS = new Setting<Boolean>("features.classes.nickname-participants", true, Boolean.class);
-  public static final Setting<Boolean> ENABLE_FREEZE = new Setting<Boolean>("features.freeze.enable", true, Boolean.class);
-  public static final Setting<Boolean> ENABLE_NICKNAME_COMMAND = new Setting<Boolean>("features.nicknames.enable", true, Boolean.class);
-  public static final Setting<Boolean> ENABLE_HOMES = new Setting<Boolean>("features.homes.enable", true, Boolean.class);
-  public static final Setting<Boolean> ENABLE_SPAWN = new Setting<Boolean>("features.spawn.enable", true, Boolean.class);
-  public static final Setting<Boolean> ENABLE_NOITEM = new Setting<Boolean>("features.noitem.enable", true, Boolean.class);
-  public static final Setting<Boolean> ENABLE_TELEPORTING = new Setting<Boolean>("features.tprequest.enable", true, Boolean.class);
+  public static final Setting<Boolean> ENABLE_CLASSES = new Setting<>("features.classes.enable", true, Boolean.class);
+  public static final Setting<Boolean> ENABLE_NICKNAME_PARTICIPANTS = new Setting<>("features.classes.nickname-participants", true, Boolean.class);
+  public static final Setting<Boolean> ENABLE_FREEZE = new Setting<>("features.freeze.enable", true, Boolean.class);
+  public static final Setting<Boolean> ENABLE_NICKNAME_COMMAND = new Setting<>("features.nicknames.enable", true, Boolean.class);
+  public static final Setting<Boolean> ENABLE_HOMES = new Setting<>("features.homes.enable", true, Boolean.class);
+  public static final Setting<Boolean> ENABLE_SPAWN = new Setting<>("features.spawn.enable", true, Boolean.class);
+  public static final Setting<Boolean> ENABLE_NOITEM = new Setting<>("features.noitem.enable", true, Boolean.class);
+  public static final Setting<Boolean> ENABLE_TELEPORTING = new Setting<>("features.tprequest.enable", true, Boolean.class);
+  public static final Setting<Boolean> ENABLE_TECTONIC = new Setting<>("features.tectonic.enable", true, Boolean.class);
   public static final Setting<Integer> TELEPORTING_TIMEOUT = new Setting<>("features.tprequest.timeout", 30, Integer.class);
 
 }

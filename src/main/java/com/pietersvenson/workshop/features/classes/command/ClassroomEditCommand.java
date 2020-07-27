@@ -25,7 +25,7 @@
 
 package com.pietersvenson.workshop.features.classes.command;
 
-import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.command.common.CommandNode;
 import com.pietersvenson.workshop.command.common.FunctionlessCommandNode;
 import com.pietersvenson.workshop.features.classes.command.edit.CurriculumCommand;
 import com.pietersvenson.workshop.features.classes.command.edit.NameCommand;
@@ -36,7 +36,7 @@ import com.pietersvenson.workshop.permission.Permissions;
 import javax.annotation.Nullable;
 
 public class ClassroomEditCommand extends FunctionlessCommandNode {
-  public ClassroomEditCommand(@Nullable CommandTree.CommandNode parent) {
+  public ClassroomEditCommand(@Nullable CommandNode parent) {
     super(parent,
         Permissions.STAFF,
         "Edits the parameters of a class",

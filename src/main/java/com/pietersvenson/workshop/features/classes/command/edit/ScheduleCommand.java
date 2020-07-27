@@ -28,7 +28,7 @@ package com.pietersvenson.workshop.features.classes.command.edit;
 import com.google.common.collect.Lists;
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandError;
-import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.command.common.CommandNode;
 import com.pietersvenson.workshop.command.common.FunctionlessCommandNode;
 import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
@@ -56,7 +56,7 @@ import java.util.stream.IntStream;
 
 public class ScheduleCommand extends FunctionlessCommandNode {
 
-  public ScheduleCommand(@Nullable CommandTree.CommandNode parent) {
+  public ScheduleCommand(@Nullable CommandNode parent) {
     super(parent,
         Permissions.STAFF,
         "Edits the schedule of the given class",
@@ -66,9 +66,9 @@ public class ScheduleCommand extends FunctionlessCommandNode {
         new ScheduleRemoveCommand(this));
   }
 
-  static final class ScheduleRemoveCommand extends CommandTree.CommandNode {
+  static final class ScheduleRemoveCommand extends CommandNode {
 
-    public ScheduleRemoveCommand(@Nullable CommandTree.CommandNode parent) {
+    public ScheduleRemoveCommand(@Nullable CommandNode parent) {
       super(parent,
           Permissions.STAFF,
           "Add a new schedule with some preset",
@@ -138,7 +138,7 @@ public class ScheduleCommand extends FunctionlessCommandNode {
 
     public static final int APPOINTMENT_CREATION_LIMIT = 30;
 
-    public ScheduleAddCommand(@Nullable CommandTree.CommandNode parent) {
+    public ScheduleAddCommand(@Nullable CommandNode parent) {
       super(parent,
           Permissions.STAFF,
           "Add a new schedule with some preset",
@@ -159,11 +159,11 @@ public class ScheduleCommand extends FunctionlessCommandNode {
 
   }
 
-  static final class ScheduleAddPeriodicCommand extends CommandTree.CommandNode {
+  static final class ScheduleAddPeriodicCommand extends CommandNode {
 
     Duration period;
 
-    public ScheduleAddPeriodicCommand(@Nullable CommandTree.CommandNode parent,
+    public ScheduleAddPeriodicCommand(@Nullable CommandNode parent,
                                       @Nonnull Permission permission,
                                       @Nonnull String description,
                                       @Nonnull String alias,
@@ -230,9 +230,9 @@ public class ScheduleCommand extends FunctionlessCommandNode {
     }
   }
 
-  static final class ScheduleAddSingleCommand extends CommandTree.CommandNode {
+  static final class ScheduleAddSingleCommand extends CommandNode {
 
-    public ScheduleAddSingleCommand(@Nullable CommandTree.CommandNode parent) {
+    public ScheduleAddSingleCommand(@Nullable CommandNode parent) {
       super(parent,
           Permissions.STAFF,
           "Add a single appointment to the current schedule",
@@ -277,7 +277,7 @@ public class ScheduleCommand extends FunctionlessCommandNode {
     }
   }
 
-  private static boolean attemptToAddSchedule(CommandTree.CommandNode node, CommandSender sender, Schedule first, Schedule second) {
+  private static boolean attemptToAddSchedule(CommandNode node, CommandSender sender, Schedule first, Schedule second) {
     try {
       if (first.overlaps(second)) {
         node.sendCommandError(sender, "That operation would create a conflicting appointment!");

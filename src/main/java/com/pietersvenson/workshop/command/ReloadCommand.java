@@ -26,7 +26,7 @@
 package com.pietersvenson.workshop.command;
 
 import com.pietersvenson.workshop.Workshop;
-import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.command.common.CommandNode;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
 import org.bukkit.command.Command;
@@ -35,9 +35,9 @@ import org.bukkit.command.CommandSender;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ReloadCommand extends CommandTree.CommandNode {
+public class ReloadCommand extends CommandNode {
 
-  public ReloadCommand(@Nullable CommandTree.CommandNode parent) {
+  public ReloadCommand(@Nullable CommandNode parent) {
     super(parent, Permissions.STAFF, "Reload all Workshop related data", "reload");
   }
 

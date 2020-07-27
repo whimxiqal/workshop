@@ -25,37 +25,42 @@
 
 package com.pietersvenson.workshop.command.common;
 
+import com.pietersvenson.workshop.config.Setting;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
+import java.util.function.BiFunction;
 
-public abstract class FunctionlessCommandNode extends CommandNode {
+public class LambdaCommandNode extends CommandNode {
 
-  public FunctionlessCommandNode(@Nullable CommandNode parent,
-                                 @Nullable Permission permission,
-                                 @Nonnull String description,
-                                 @Nonnull String primaryAlias) {
+  BiFunction<CommandSender, String[], Boolean> executor;
+
+  public LambdaCommandNode(@Nullable CommandNode parent,
+                           @Nullable Permission permission,
+                           @Nonnull String description,
+                           @Nonnull String primaryAlias,
+                           @Nonnull BiFunction<CommandSender, String[], Boolean> executor) {
     super(parent, permission, description, primaryAlias);
+    this.executor = Objects.requireNonNull(executor);
   }
 
-  public FunctionlessCommandNode(@Nullable CommandNode parent,
-                                 @Nullable Permission permission,
-                                 @Nonnull String description,
-                                 @Nonnull String primaryAlias,
-                                 boolean addHelp,
-                                 boolean active) {
-    super(parent, permission, description, primaryAlias);
+  public LambdaCommandNode(@Nullable CommandNode parent,
+                           @Nullable Permission permission,
+                           @Nonnull String description,
+                           @Nonnull String primaryAlias,
+                           boolean addHelp,
+                           Setting<Boolean> enablerSetting,
+                           @Nonnull BiFunction<CommandSender, String[], Boolean> executor) {
+    super(parent, permission, description, primaryAlias, addHelp, enablerSetting);
+    this.executor = Objects.requireNonNull(executor);
   }
 
   @Override
-  public final boolean onWrappedCommand(@Nonnull CommandSender sender,
-                                        @Nonnull Command command,
-                                        @Nonnull String label,
-                                        @Nonnull String[] args) {
-    sendCommandError(sender, CommandError.FEW_ARGUMENTS);
-    return false;
+  public final boolean onWrappedCommand(@Nonnull CommandSender sender, @Nonnull Command command, @Nonnull String label, @Nonnull String[] args) {
+    return executor.apply(sender, args);
   }
 }

@@ -25,7 +25,7 @@
 
 package com.pietersvenson.workshop.features.classes.command;
 
-import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.command.common.CommandNode;
 import com.pietersvenson.workshop.command.common.FunctionlessCommandNode;
 import com.pietersvenson.workshop.config.Settings;
 import com.pietersvenson.workshop.permission.Permissions;
@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 
 public final class ClassroomCommand extends FunctionlessCommandNode {
 
-  public ClassroomCommand(@Nullable CommandTree.CommandNode parent) {
+  public ClassroomCommand(@Nullable CommandNode parent) {
     super(parent,
         Permissions.STAFF,
         "Manages the classes registered for this server",
@@ -44,7 +44,7 @@ public final class ClassroomCommand extends FunctionlessCommandNode {
         new ClassroomEditCommand(this),
         new ClassroomListCommand(this),
         new ClassroomInfoCommand(this));
-    setEnabler(Settings.ENABLE_CLASSES::getValue);
+    setEnabler(Settings.ENABLE_CLASSES);
   }
 
 }

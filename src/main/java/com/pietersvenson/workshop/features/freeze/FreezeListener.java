@@ -45,7 +45,7 @@ import java.util.function.Supplier;
 public class FreezeListener extends FeatureListener {
 
   protected FreezeListener() {
-    super(Settings.ENABLE_FREEZE::getValue);
+    super(Settings.ENABLE_FREEZE);
   }
 
   @FeatureEventHandler

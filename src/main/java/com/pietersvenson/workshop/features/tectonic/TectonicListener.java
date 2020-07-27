@@ -23,14 +23,26 @@
  *
  */
 
-package com.pietersvenson.workshop.util;
+package com.pietersvenson.workshop.features.tectonic;
 
-public final class Reference {
+import com.pietersvenson.workshop.config.Settings;
+import com.pietersvenson.workshop.features.FeatureEventHandler;
+import com.pietersvenson.workshop.features.FeatureListener;
+import com.pietersvenson.workshop.permission.Permissions;
+import org.bukkit.event.block.BlockBreakEvent;
 
-  private Reference() {
+public class TectonicListener extends FeatureListener {
+
+  protected TectonicListener() {
+    super(Settings.ENABLE_TECTONIC);
   }
 
-  public static final String DESCRIPTION = "A Spigot plugin designed for the management of servers hosted by Einstein's Workshop";
-  public static final String VERSION = "0.1.0";
+  @FeatureEventHandler
+  public void onBreakBlock(BlockBreakEvent blockBreakEvent) {
+    if (!blockBreakEvent.getPlayer().hasPermission(Permissions.STAFF)
+        && blockBreakEvent.getBlock().getY() <= 0) {
+      blockBreakEvent.setCancelled(true);
+    }
+  }
 
 }

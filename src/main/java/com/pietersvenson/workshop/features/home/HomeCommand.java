@@ -26,7 +26,7 @@
 package com.pietersvenson.workshop.features.home;
 
 import com.pietersvenson.workshop.Workshop;
-import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.command.common.CommandNode;
 import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
 import com.pietersvenson.workshop.config.Settings;
@@ -43,14 +43,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class HomeCommand extends CommandTree.CommandNode {
+public class HomeCommand extends CommandNode {
 
   /**
    * Default constructor.
    *
    * @param parent the parent node
    */
-  public HomeCommand(@Nonnull CommandTree.CommandNode parent) {
+  public HomeCommand(@Nonnull CommandNode parent) {
     super(parent,
         Permissions.COMMAND_ROOT,
         "Teleport to saved locations",
@@ -66,7 +66,7 @@ public class HomeCommand extends CommandTree.CommandNode {
             .permission(Permissions.STAFF)
             .build(),
         "Teleport to the home of <player>");
-    setEnabler(Settings.ENABLE_HOMES::getValue);
+    setEnabler(Settings.ENABLE_HOMES);
   }
 
   @Override
@@ -104,6 +104,8 @@ public class HomeCommand extends CommandTree.CommandNode {
             return true;
           }
         }
+        player.sendMessage(Format.error("That player doesn't have a home!"));
+        return false;
       }
     }
 
@@ -111,7 +113,7 @@ public class HomeCommand extends CommandTree.CommandNode {
     return false;
   }
 
-  private static class HomeSetCommand extends CommandTree.CommandNode {
+  private static class HomeSetCommand extends CommandNode {
 
     private HomeSetCommand(@Nonnull HomeCommand parent) {
       super(parent,

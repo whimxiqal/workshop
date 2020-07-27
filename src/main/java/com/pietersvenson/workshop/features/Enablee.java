@@ -25,24 +25,12 @@
 
 package com.pietersvenson.workshop.features;
 
-import javax.annotation.Nonnull;
-import java.util.Objects;
-import java.util.function.Supplier;
+public interface Enablee {
 
-public class Enablee {
+  boolean isEnabled();
 
-  private Supplier<Boolean> enabler;
+  boolean enable();
 
-  protected Enablee(@Nonnull Supplier<Boolean> enabler) {
-    this.enabler = Objects.requireNonNull(enabler);
-  }
-
-  public Boolean enabled() {
-    return enabler.get();
-  }
-
-  public void setEnabler(@Nonnull Supplier<Boolean> enabler) {
-    this.enabler = Objects.requireNonNull(enabler);
-  }
+  boolean disable();
 
 }

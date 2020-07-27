@@ -42,7 +42,7 @@ import java.util.Optional;
 public class ClassroomNicknameListener extends FeatureListener {
 
   ClassroomNicknameListener() {
-    super(Settings.ENABLE_NICKNAME_PARTICIPANTS::getValue);
+    super(Settings.ENABLE_NICKNAME_PARTICIPANTS);
   }
 
   @FeatureEventHandler

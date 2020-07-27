@@ -26,9 +26,7 @@
 package com.pietersvenson.workshop.features.classes.command;
 
 import com.pietersvenson.workshop.Workshop;
-import com.pietersvenson.workshop.command.common.CommandTree;
-import com.pietersvenson.workshop.features.classes.Appointment;
-import com.pietersvenson.workshop.features.classes.Classroom;
+import com.pietersvenson.workshop.command.common.CommandNode;
 import com.pietersvenson.workshop.features.classes.ClassroomManager;
 import com.pietersvenson.workshop.features.classes.Schedule;
 import com.pietersvenson.workshop.permission.Permissions;
@@ -42,10 +40,9 @@ import javax.annotation.Nullable;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
-import java.util.List;
 
-public class ClassroomListCommand extends CommandTree.CommandNode {
-  public ClassroomListCommand(@Nullable CommandTree.CommandNode parent) {
+public class ClassroomListCommand extends CommandNode {
+  public ClassroomListCommand(@Nullable CommandNode parent) {
     super(parent,
         Permissions.STAFF,
         "List all registered classes",

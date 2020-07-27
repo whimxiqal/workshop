@@ -23,14 +23,19 @@
  *
  */
 
-package com.pietersvenson.workshop.util;
+package com.pietersvenson.workshop.features.tectonic;
 
-public final class Reference {
+import com.pietersvenson.workshop.features.FeatureListener;
+import com.pietersvenson.workshop.features.FeatureManager;
 
-  private Reference() {
+import javax.annotation.Nonnull;
+import java.util.Collection;
+import java.util.Collections;
+
+public class TectonicManager extends FeatureManager {
+  @Nonnull
+  @Override
+  protected Collection<FeatureListener> getListeners() {
+    return Collections.singleton(new TectonicListener());
   }
-
-  public static final String DESCRIPTION = "A Spigot plugin designed for the management of servers hosted by Einstein's Workshop";
-  public static final String VERSION = "0.1.0";
-
 }

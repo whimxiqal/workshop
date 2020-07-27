@@ -73,12 +73,6 @@ public final class Workshop extends JavaPlugin {
     getLogger().info("Registering commands...");
     CommandTree.register(this, new WorkshopCommandRoot());
 
-//    getLogger().info("Registering listeners...");
-//    getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-//    getServer().getPluginManager().registerEvents(new InventoryListener(), this);
-
-
-
   }
 
   @Override

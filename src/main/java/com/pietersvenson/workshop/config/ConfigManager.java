@@ -67,6 +67,17 @@ public class ConfigManager implements Stateful {
         .collect(Collectors.toMap(Setting::getPath, setting -> setting));
   }
 
+  public void dumpSettings() {
+    getSettings().forEach((key, value) -> configuration.set(key, value.getValue()));
+  }
+
+  @Nonnull
+  @Override
+  public String dumpState() {
+    dumpSettings();
+    return configuration.saveToString();
+  }
+
   public void loadSettings() {
     getSettings().forEach((key, value) -> {
       if (configuration.contains(key)) {
@@ -77,21 +88,15 @@ public class ConfigManager implements Stateful {
     });
   }
 
-  @Nonnull
-  @Override
-  public String getFileName() {
-    return "config.yml";
-  }
-
-  @Nonnull
-  @Override
-  public String dumpState() {
-    return configuration.saveToString();
-  }
-
   @Override
   public void loadState(String state) throws Exception {
     configuration.loadFromString(state);
     loadSettings();
+  }
+
+  @Nonnull
+  @Override
+  public String getFileName() {
+    return "config.yml";
   }
 }

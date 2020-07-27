@@ -27,24 +27,22 @@ package com.pietersvenson.workshop.features.classes.command;
 
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandError;
-import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.command.common.CommandNode;
 import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
-import com.pietersvenson.workshop.features.classes.Classroom;
 import com.pietersvenson.workshop.features.classes.ClassroomManager;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
 import com.pietersvenson.workshop.util.Validate;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ClassroomRemoveCommand extends CommandTree.CommandNode {
+public class ClassroomRemoveCommand extends CommandNode {
 
-  public ClassroomRemoveCommand(@Nullable CommandTree.CommandNode parent) {
+  public ClassroomRemoveCommand(@Nullable CommandNode parent) {
     super(parent,
         Permissions.STAFF,
         "Deletes a class currently registered",

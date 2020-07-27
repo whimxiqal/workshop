@@ -44,7 +44,7 @@ import java.util.function.Supplier;
 public class ClassroomListener extends FeatureListener {
 
   protected ClassroomListener() {
-    super(Settings.ENABLE_CLASSES::getValue);
+    super(Settings.ENABLE_CLASSES);
   }
 
   @FeatureEventHandler

@@ -40,7 +40,7 @@ import org.bukkit.inventory.InventoryHolder;
 public class NoitemListener extends FeatureListener {
 
   protected NoitemListener() {
-    super(Settings.ENABLE_NOITEM::getValue);
+    super(Settings.ENABLE_NOITEM);
   }
 
   @FeatureEventHandler

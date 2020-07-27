@@ -27,7 +27,7 @@ package com.pietersvenson.workshop.features.classes.command;
 
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandError;
-import com.pietersvenson.workshop.command.common.CommandTree;
+import com.pietersvenson.workshop.command.common.CommandNode;
 import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
 import com.pietersvenson.workshop.features.classes.Appointment;
@@ -48,9 +48,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-public class ClassroomInfoCommand extends CommandTree.CommandNode {
+public class ClassroomInfoCommand extends CommandNode {
 
-  public ClassroomInfoCommand(@Nullable CommandTree.CommandNode parent) {
+  public ClassroomInfoCommand(@Nullable CommandNode parent) {
     super(parent, Permissions.STAFF,
         "Display the info about a class",
         "info");
@@ -94,9 +94,9 @@ public class ClassroomInfoCommand extends CommandTree.CommandNode {
     return true;
   }
 
-  public static final class ClassroomInfoParticipantsCommand extends CommandTree.CommandNode {
+  public static final class ClassroomInfoParticipantsCommand extends CommandNode {
 
-    public ClassroomInfoParticipantsCommand(@Nullable CommandTree.CommandNode parent) {
+    public ClassroomInfoParticipantsCommand(@Nullable CommandNode parent) {
       super(parent, Permissions.STAFF,
           "Display the participants of a class",
           "participants");
@@ -136,9 +136,9 @@ public class ClassroomInfoCommand extends CommandTree.CommandNode {
 
   }
 
-  public static final class ClassroomInfoScheduleCommand extends CommandTree.CommandNode {
+  public static final class ClassroomInfoScheduleCommand extends CommandNode {
 
-    public ClassroomInfoScheduleCommand(@Nullable CommandTree.CommandNode parent) {
+    public ClassroomInfoScheduleCommand(@Nullable CommandNode parent) {
       super(parent, Permissions.STAFF,
           "Display the schedule of a class",
           "schedule");

@@ -56,7 +56,7 @@ public abstract class FeatureManager {
               EventPriority.NORMAL,
               (li, event) -> {
                 try {
-                  if (listener.enabled()) {
+                  if (listener.isEnabled()) {
                     method.invoke(li, event);
                   }
                 } catch (IllegalAccessException | InvocationTargetException e) {
