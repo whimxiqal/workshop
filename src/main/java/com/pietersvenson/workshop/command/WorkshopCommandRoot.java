@@ -28,6 +28,7 @@ package com.pietersvenson.workshop.command;
 import com.pietersvenson.workshop.command.common.CommandNode;
 import com.pietersvenson.workshop.features.classes.command.ClassroomCommand;
 import com.pietersvenson.workshop.features.freeze.FreezeCommand;
+import com.pietersvenson.workshop.features.gather.GatherCommand;
 import com.pietersvenson.workshop.features.home.HomeCommand;
 import com.pietersvenson.workshop.features.nickname.NicknameCommand;
 import com.pietersvenson.workshop.features.noitem.NoitemCommand;
@@ -68,7 +69,8 @@ public final class WorkshopCommandRoot extends CommandNode {
         new NicknameCommand(this),
         new SpawnCommand(this),
         new TeleportAcceptCommand(this),
-        new TeleportRequestCommand(this)
+        new TeleportRequestCommand(this),
+        new GatherCommand(this)
     );
   }
 

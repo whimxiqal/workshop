@@ -56,10 +56,13 @@ public abstract class FeatureManager {
               EventPriority.NORMAL,
               (li, event) -> {
                 try {
-                  if (listener.isEnabled()) {
+                  if (listener.isEnabled() && event.getClass().equals(parameter.getType())) {
                     method.invoke(li, event);
                   }
-                } catch (IllegalAccessException | InvocationTargetException e) {
+                } catch (Exception e) {
+                  Workshop.getInstance().getLogger().severe("Exception trying to use a listener for: "
+                      + parameter.getType().toString()
+                      + " with: " + event.getClass().toString());
                   e.printStackTrace();
                 }
               }, Workshop.getInstance());

@@ -31,7 +31,8 @@ public enum CommandError {
 
   FEW_ARGUMENTS("Too few arguments!"),
   UNKNOWN_ARGS("Unknown argument!"),
-  NO_PLAYER("That player doesn't exist!");
+  NO_PLAYER("That player doesn't exist!"),
+  ONLY_PLAYER("Only players may execute that command!");
 
   @Getter
   private String message;
