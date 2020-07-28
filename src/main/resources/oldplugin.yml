@@ -1,8 +1,0 @@
-name: Workshop
-version: @version@
-main: com.pietersvenson.workshop.Workshop
-api-version: 1.15.2
-prefix: [Workshop]
-authors: [pietelite]
-description: A Spigot plugin designed for the management of servers hosted by Einstein's Workshop
-website: www.einsteinsworkshop.com
