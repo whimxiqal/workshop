@@ -69,7 +69,7 @@ final class HelpCommandNode extends CommandNode {
           builder.append(" [ . . . ]");
         }
         builder.append(ChatColor.GRAY)
-            .append(" > ")
+            .append("  ")
             .append(ChatColor.WHITE)
             .append(node.getDescription());
         sender.sendMessage(builder.toString());
@@ -86,7 +86,7 @@ final class HelpCommandNode extends CommandNode {
               .append(ChatColor.AQUA)
               .append(usage)
               .append(ChatColor.GRAY)
-              .append(" > ")
+              .append("  ")
               .append(ChatColor.WHITE)
               .append(parent.getParameterDescription(parameter));
           sender.sendMessage(builder.toString());

@@ -23,7 +23,7 @@
  *
  */
 
-package com.pietersvenson.workshop.features.noitem;
+package com.pietersvenson.workshop.features.banitem;
 
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandError;
@@ -44,24 +44,24 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-public class NoitemCommand extends CommandNode {
+public class BanitemCommand extends CommandNode {
 
   /**
    * Default constructor.
    *
    * @param parent parent node
    */
-  public NoitemCommand(@Nullable CommandNode parent) {
+  public BanitemCommand(@Nullable CommandNode parent) {
     super(parent,
         Permissions.STAFF,
         "Ban certain items",
-        "noitem");
+        "banitem");
     addSubcommand(Parameter.builder()
         .supplier(ParameterSuppliers.ITEM)
         .permission(Permissions.STAFF)
         .build(), "Ban an item");
     addChildren(new NoitemListCommand(this));
-    setEnabler(Settings.ENABLE_NOITEM);
+    setEnabler(Settings.ENABLE_BANITEM);
   }
 
   @Override
@@ -97,14 +97,14 @@ public class NoitemCommand extends CommandNode {
     }
 
 
-    NoitemManager noitemManager = Workshop.getInstance().getState().getNoitemManager();
-    if (noitemManager.isBanned(material)) {
-      noitemManager.unban(material);
+    BanitemManager banitemManager = Workshop.getInstance().getState().getBanitemManager();
+    if (banitemManager.isBanned(material)) {
+      banitemManager.unban(material);
         sender.sendMessage(Format.success("The item "
             + material.toString() + " is now "
             + ChatColor.YELLOW + "unbanned"));
     } else {
-      noitemManager.ban(material);
+      banitemManager.ban(material);
       sender.sendMessage(Format.success("The item "
           + material.toString() + " is now "
           + ChatColor.RED + "banned"));
@@ -123,13 +123,13 @@ public class NoitemCommand extends CommandNode {
 
     @Override
     public boolean onWrappedCommand(@Nonnull CommandSender sender, @Nonnull Command command, @Nonnull String label, @Nonnull String[] args) {
-      List<Material> banned = Workshop.getInstance().getState().getNoitemManager().getBanned();
+      List<Material> banned = Workshop.getInstance().getState().getBanitemManager().getBanned();
       if (banned.isEmpty()) {
         sender.sendMessage(Format.success("No items are banned."));
       } else {
         sender.sendMessage(Format.success("Banned items: "
             + ChatColor.WHITE
-            + banned.stream().map(Material::name).collect(Collectors.joining(", "))));
+            + banned.stream().map(Material::name).map(String::toLowerCase).collect(Collectors.joining(", "))));
       }
       return true;
     }

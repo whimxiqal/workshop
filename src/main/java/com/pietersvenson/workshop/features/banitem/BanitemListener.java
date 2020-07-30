@@ -23,7 +23,7 @@
  *
  */
 
-package com.pietersvenson.workshop.features.noitem;
+package com.pietersvenson.workshop.features.banitem;
 
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.config.Settings;
@@ -37,15 +37,15 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.InventoryHolder;
 
-public class NoitemListener extends FeatureListener {
+public class BanitemListener extends FeatureListener {
 
-  protected NoitemListener() {
-    super(Settings.ENABLE_NOITEM);
+  protected BanitemListener() {
+    super(Settings.ENABLE_BANITEM);
   }
 
   @FeatureEventHandler
   public void onPlayerJoin(PlayerJoinEvent playerJoinEvent) {
-    Workshop.getInstance().getState().getNoitemManager().scheduledClean(playerJoinEvent.getPlayer().getInventory());
+    Workshop.getInstance().getState().getBanitemManager().scheduledClean(playerJoinEvent.getPlayer().getInventory());
   }
 
   @FeatureEventHandler
@@ -53,7 +53,7 @@ public class NoitemListener extends FeatureListener {
     if (!inventoryCreativeEvent.getWhoClicked().hasPermission(Permissions.STAFF)) {
       Workshop.getInstance()
           .getState()
-          .getNoitemManager()
+          .getBanitemManager()
           .scheduledClean(inventoryCreativeEvent.getWhoClicked().getInventory());
     }
   }
@@ -63,7 +63,7 @@ public class NoitemListener extends FeatureListener {
     if (!inventoryClickEvent.getWhoClicked().hasPermission(Permissions.STAFF)) {
       Workshop.getInstance()
           .getState()
-          .getNoitemManager()
+          .getBanitemManager()
           .scheduledClean(inventoryClickEvent.getWhoClicked().getInventory());
     }
   }
@@ -71,7 +71,7 @@ public class NoitemListener extends FeatureListener {
   @FeatureEventHandler
   public void onInventoryDrop(PlayerDropItemEvent dropItemEvent) {
     if (!dropItemEvent.getPlayer().hasPermission(Permissions.STAFF)) {
-      if (Workshop.getInstance().getState().getNoitemManager().isBanned(dropItemEvent.getItemDrop().getItemStack().getType())) {
+      if (Workshop.getInstance().getState().getBanitemManager().isBanned(dropItemEvent.getItemDrop().getItemStack().getType())) {
         dropItemEvent.getItemDrop().remove();
       }
     }
@@ -81,10 +81,10 @@ public class NoitemListener extends FeatureListener {
   public void onInventoryPickup(EntityPickupItemEvent pickupItemEvent) {
     if ((pickupItemEvent.getEntity() instanceof InventoryHolder)
         && !pickupItemEvent.getEntity().hasPermission(Permissions.STAFF)
-        && Workshop.getInstance().getState().getNoitemManager().isBanned(pickupItemEvent.getItem().getItemStack().getType())) {
+        && Workshop.getInstance().getState().getBanitemManager().isBanned(pickupItemEvent.getItem().getItemStack().getType())) {
       Workshop.getInstance()
           .getState()
-          .getNoitemManager()
+          .getBanitemManager()
           .scheduledClean(((InventoryHolder) pickupItemEvent.getEntity()).getInventory());
     }
   }

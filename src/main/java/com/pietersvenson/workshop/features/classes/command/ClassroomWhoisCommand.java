@@ -23,32 +23,35 @@
  *
  */
 
-package com.pietersvenson.workshop.features.teleport;
+package com.pietersvenson.workshop.features.classes.command;
 
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandError;
 import com.pietersvenson.workshop.command.common.CommandNode;
+import com.pietersvenson.workshop.command.common.LambdaCommandNode;
 import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
-import com.pietersvenson.workshop.config.Settings;
+import com.pietersvenson.workshop.features.classes.Classroom;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.External;
 import com.pietersvenson.workshop.util.Format;
-import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Optional;
 
-public class TeleportAcceptCommand extends CommandNode {
-  public TeleportAcceptCommand(@Nullable CommandNode parent) {
-    super(parent, Permissions.COMMAND_ROOT, "Accept incoming teleport requests", "tpa");
-    addAliases("teleportaccept");
+public class ClassroomWhoisCommand extends CommandNode {
+
+  public ClassroomWhoisCommand(@Nullable CommandNode parent) {
+    super(parent, Permissions.STAFF,
+        "Find out what the name is of a player in a class",
+        "whois");
+    addAliases("who");
     addSubcommand(Parameter.builder().supplier(ParameterSuppliers.ONLINE_PLAYER).build(),
-        "Accept a teleport request with a player's username");
-    setEnabler(Settings.ENABLE_TELEPORTING);
+        "Use the player's username to find their registered IRL name");
   }
 
   @Override
@@ -56,42 +59,33 @@ public class TeleportAcceptCommand extends CommandNode {
                                   @Nonnull Command command,
                                   @Nonnull String label,
                                   @Nonnull String[] args) {
-    if (!(sender instanceof Player)) {
-      sender.sendMessage(Format.error("Only players may execute that command!"));
-      return false;
-    }
-    Player destination = (Player) sender;
-
     if (args.length < 1) {
       sendCommandError(sender, CommandError.FEW_ARGUMENTS);
       return false;
     }
-
+    Optional<Classroom> classroom = Workshop.getInstance().getState().getClassroomManager().getInSession();
+    if (!classroom.isPresent()) {
+      sender.sendMessage(Format.error("There are no classes currently in session"));
+      return false;
+    }
     External.getPlayerUuid(args[0]).thenAccept(uuid -> {
       if (!uuid.isPresent()) {
         sendCommandError(sender, CommandError.NO_PLAYER);
         return;
       }
-      Player requester = Bukkit.getPlayer(uuid.get());
-      if (requester == null) {
-        sender.sendMessage(Format.error("The server couldn't find that player!"));
+      Optional<Classroom.Participant> participant = classroom.get().getParticipants()
+          .stream()
+          .filter(part -> part.getPlayerUuid().equals(uuid.get()))
+          .findAny();
+      if (!participant.isPresent()) {
+        sender.sendMessage(Format.error("There is no registered participant in the current class with that username"));
         return;
       }
-      TeleportManager tpManager = Workshop.getInstance().getState().getTeleportManager();
-      if (!tpManager.hasRequest(uuid.get(), destination.getUniqueId())) {
-        sender.sendMessage(Format.error("There is no incoming request from that player"));
-        return;
-      }
-      if (tpManager.expired(uuid.get(), destination.getUniqueId())) {
-        sender.sendMessage(Format.error("That request has expired!"));
-        return;
-      }
-      if (tpManager.accept(uuid.get(), destination.getUniqueId())) {
-        requester.sendMessage(Format.success("Your request was accepted!"));
-        destination.sendMessage(Format.success("You have accepted the request"));
-      } else {
-        destination.sendMessage(Format.error("An error occurred trying to complete the request"));
-      }
+      sender.sendMessage(Format.PREFIX
+          + ChatColor.LIGHT_PURPLE + args[0]
+          + Format.INFO + " is "
+          + ChatColor.GREEN + participant.get().getFirstName() + " "
+          + participant.get().getLastName());
     });
     return true;
   }

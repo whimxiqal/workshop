@@ -23,7 +23,7 @@
  *
  */
 
-package com.pietersvenson.workshop.features.noitem;
+package com.pietersvenson.workshop.features.banitem;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -50,7 +50,7 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 
-public class NoitemManager extends FeatureManager implements Stateful {
+public class BanitemManager extends FeatureManager implements Stateful {
 
   Set<String> banned = Sets.newHashSet();
 
@@ -66,7 +66,7 @@ public class NoitemManager extends FeatureManager implements Stateful {
     }
     boolean out = this.banned.add(item.toString().toUpperCase());
     Workshop.getInstance().saveStateSynchronous();
-    if (Settings.ENABLE_NOITEM.getValue()) {
+    if (Settings.ENABLE_BANITEM.getValue()) {
       Bukkit.getOnlinePlayers()
           .stream()
           .filter(player -> !player.hasPermission(Permissions.STAFF))
@@ -122,7 +122,7 @@ public class NoitemManager extends FeatureManager implements Stateful {
   @Nonnull
   @Override
   public String getFileName() {
-    return "noitem.yml";
+    return "banitem.yml";
   }
 
   @Nonnull
@@ -157,7 +157,7 @@ public class NoitemManager extends FeatureManager implements Stateful {
   @Nonnull
   @Override
   protected Collection<FeatureListener> getListeners() {
-    return Collections.singleton(new NoitemListener());
+    return Collections.singleton(new BanitemListener());
   }
 
 }

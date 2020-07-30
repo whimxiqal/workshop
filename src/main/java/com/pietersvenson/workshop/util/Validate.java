@@ -53,7 +53,7 @@ public final class Validate {
   }
 
   public static boolean isName(String s) {
-    return !s.isEmpty() && !Pattern.compile(".*[^a-zA-Z\\-].*").matcher(s).find();
+    return !s.isEmpty() && !Pattern.compile(".*[^a-zA-Z\\- ].*").matcher(s).find();
   }
 
   public static boolean isAlphaNumeric(String s) {

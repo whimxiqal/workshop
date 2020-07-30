@@ -50,7 +50,7 @@ public final class Format {
 
   public static final ChatColor THEME = ChatColor.DARK_GRAY;
   public static final ChatColor SUCCESS = ChatColor.GREEN;
-  public static final ChatColor INFO = ChatColor.WHITE;
+  public static final ChatColor INFO = ChatColor.LIGHT_PURPLE;
   public static final ChatColor WARN = ChatColor.YELLOW;
   public static final ChatColor ERROR = ChatColor.RED;
   public static final ChatColor STAFF = ChatColor.AQUA;
@@ -109,7 +109,7 @@ public final class Format {
     return out.toArray(new String[0]);
   }
 
-  public static String participantDisplayName(Classroom.Participant participant, String username) {
+  public static String participantDisplayName(Classroom.Participant participant) {
     return participant.getFirstName().substring(0, 1).toUpperCase()
         + participant.getFirstName().substring(1).toLowerCase()
         + participant.getLastName().substring(0, 1).toUpperCase();

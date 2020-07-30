@@ -26,6 +26,8 @@
 package com.pietersvenson.workshop.command.common;
 
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Stack;
 import javax.annotation.Nonnull;
 
 import org.bukkit.command.PluginCommand;
@@ -44,21 +46,34 @@ public class CommandTree {
     return root;
   }
 
+  public <N extends CommandNode> Optional<N> getNode(Class<N> clazz) {
+    Stack<CommandNode> commands = new Stack<>();
+    commands.push(root());
+    while (!commands.isEmpty()) {
+      CommandNode top = commands.peek();
+      if (clazz.isInstance(top)) {
+        return Optional.of(clazz.cast(top));
+      }
+      commands.pop();
+      commands.addAll(top.getChildren());
+    }
+    return Optional.empty();
+  }
+
   /**
    * Register all functionality of a command, noted in the plugin.yml.
    *
    * @param plugin the plugin under which this command is registered
-   * @param root   the root CommandNode of the entire command tree,
-   *               whose name is registered in the plugin.yml
    * @return the tree of all commands with the given root
    */
-  public static CommandTree register(@Nonnull JavaPlugin plugin, @Nonnull CommandNode root) {
-    CommandTree tree = new CommandTree(root);
-    PluginCommand command = Objects.requireNonNull(plugin.getCommand(root.getPrimaryAlias()));
+  public void register(@Nonnull JavaPlugin plugin) {
+    PluginCommand command = plugin.getCommand(root.getPrimaryAlias());
+    if (command == null) {
+      throw new NullPointerException("You must register this command in the plugin.yml");
+    }
     command.setExecutor(root);
     command.setTabCompleter(root);
     root.getPermission().map(Permission::getName).ifPresent(command::setPermission);
-    return tree;
   }
 
 }

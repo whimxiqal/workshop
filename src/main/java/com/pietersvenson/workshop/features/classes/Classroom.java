@@ -27,7 +27,10 @@ package com.pietersvenson.workshop.features.classes;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.pietersvenson.workshop.Workshop;
+import com.pietersvenson.workshop.config.Settings;
 import com.pietersvenson.workshop.util.External;
+import com.pietersvenson.workshop.util.Format;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -67,6 +70,8 @@ public class Classroom {
   @Getter
   @NonNull
   private final List<Participant> participants = Lists.newLinkedList();
+  private Map<UUID, RegistrationForm> registering = Maps.newHashMap();
+  private boolean publik;
 
   public Classroom(@Nonnull String id) {
     this.id = Objects.requireNonNull(id);
@@ -157,6 +162,37 @@ public class Classroom {
     return !s.isEmpty() && !Pattern.compile(".*[^a-zA-Z0-9 ].*").matcher(s).find();
   }
 
+  public Optional<RegistrationForm> getRegistrationForm(UUID player) {
+    return Optional.ofNullable(this.registering.get(player));
+  }
+
+  public boolean isRegistering(UUID player) {
+    return getRegistrationForm(player).isPresent();
+  }
+
+  public void startRegistering(UUID player) {
+    this.registering.put(player, new RegistrationForm());
+  }
+
+  public Optional<Participant> completeRegistration(UUID player) {
+    Optional<RegistrationForm> form = getRegistrationForm(player);
+    if (!form.isPresent()) {
+      return Optional.empty();
+    }
+    Participant participant = form.get().complete(player);
+    this.addParticipant(participant);
+    registering.remove(player);
+    return Optional.of(participant);
+  }
+
+  public void setPublic(boolean publik) {
+    this.publik = publik;
+  }
+
+  public boolean isPublic() {
+    return this.publik;
+  }
+
   @Data
   public static class Participant {
 
@@ -189,6 +225,18 @@ public class Classroom {
           UUID.fromString(data.get("mc_uuid")));
       External.getPlayerName(out.getPlayerUuid()).thenAccept(nameOp -> nameOp.ifPresent(out::setLastKnownUsername));
       return out;
+    }
+
+    public boolean giveNickname() {
+      if (Settings.ENABLE_NICKNAME_PARTICIPANTS.getValue()) {
+        return false;
+      }
+      try {
+        Workshop.getInstance().getState().getNicknameManager().setNickname(playerUuid, Format.participantDisplayName(this));
+        return true;
+      } catch (UnsupportedOperationException e) {
+        return false;
+      }
     }
   }
 }

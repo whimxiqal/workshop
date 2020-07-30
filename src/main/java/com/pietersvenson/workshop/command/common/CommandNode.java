@@ -27,6 +27,7 @@ package com.pietersvenson.workshop.command.common;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.pietersvenson.workshop.config.NullableSettingEnablee;
 import com.pietersvenson.workshop.config.Setting;
 import com.pietersvenson.workshop.permission.Permissions;
@@ -47,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 public abstract class CommandNode extends NullableSettingEnablee implements CommandExecutor, TabCompleter {
 
@@ -145,7 +147,7 @@ public abstract class CommandNode extends NullableSettingEnablee implements Comm
     return parameters.get(parameter);
   }
 
-  public final void addSubcommand(@Nonnull Parameter parameter, @Nonnull String description) {
+  protected final void addSubcommand(@Nonnull Parameter parameter, @Nonnull String description) {
     this.parameters.put(parameter, description);
   }
 
@@ -160,8 +162,17 @@ public abstract class CommandNode extends NullableSettingEnablee implements Comm
     return command.toString();
   }
 
-  public final void addChildren(CommandNode... nodes) {
+  protected final void addChildren(CommandNode... nodes) {
     this.children.addAll(Arrays.asList(nodes));
+    Set<String> childrenAliases = Sets.newHashSet();
+    for (CommandNode child : children) {
+      for (String alias : child.getAliases()) {
+        if (childrenAliases.contains(alias.toLowerCase())) {
+          throw new IllegalStateException("There may not be two of the same alias in the children of a Command Node: "
+              + alias);
+        }
+      }
+    }
   }
 
   @Nonnull
@@ -248,7 +259,9 @@ public abstract class CommandNode extends NullableSettingEnablee implements Comm
                                           @Nonnull String[] args) {
     List<String> cmds = Lists.newLinkedList();
     if (!isEnabled()) {
-      cmds.add("enable");
+      if (sender.hasPermission(Permissions.STAFF)) {
+        cmds.add("enable");
+      }
       return cmds;
     }
     if (this.permission != null && !sender.hasPermission(this.permission)) {

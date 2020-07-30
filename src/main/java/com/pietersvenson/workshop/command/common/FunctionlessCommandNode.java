@@ -25,6 +25,8 @@
 
 package com.pietersvenson.workshop.command.common;
 
+import com.pietersvenson.workshop.config.Setting;
+import com.pietersvenson.workshop.util.Format;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
@@ -46,8 +48,8 @@ public abstract class FunctionlessCommandNode extends CommandNode {
                                  @Nonnull String description,
                                  @Nonnull String primaryAlias,
                                  boolean addHelp,
-                                 boolean active) {
-    super(parent, permission, description, primaryAlias);
+                                 Setting<Boolean> enablerSetting) {
+    super(parent, permission, description, primaryAlias, addHelp, enablerSetting);
   }
 
   @Override
@@ -55,7 +57,7 @@ public abstract class FunctionlessCommandNode extends CommandNode {
                                         @Nonnull Command command,
                                         @Nonnull String label,
                                         @Nonnull String[] args) {
-    sendCommandError(sender, CommandError.FEW_ARGUMENTS);
+    sendCommandError(sender, "Too few arguments or invalid arguments!");
     return false;
   }
 }

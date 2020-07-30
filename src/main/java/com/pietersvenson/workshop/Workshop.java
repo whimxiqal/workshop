@@ -61,6 +61,9 @@ public final class Workshop extends JavaPlugin {
   @Getter
   private WorkshopState state;
 
+  @Getter
+  private CommandTree workshopCommandTree;
+
   @Override
   public void onEnable() {
     Workshop.instance = this;
@@ -71,7 +74,14 @@ public final class Workshop extends JavaPlugin {
     getState().load();
 
     getLogger().info("Registering commands...");
-    CommandTree.register(this, new WorkshopCommandRoot());
+    workshopCommandTree = new CommandTree(new WorkshopCommandRoot());
+    workshopCommandTree.register(this);
+
+    // Schedule a data-save every 10 minutes
+    Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
+      state.save();
+      getLogger().info("Automatically saved Workshop data.");
+    }, 12000, 12000);
 
   }
 

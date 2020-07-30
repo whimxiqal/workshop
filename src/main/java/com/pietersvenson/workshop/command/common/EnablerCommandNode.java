@@ -28,21 +28,17 @@ package com.pietersvenson.workshop.command.common;
 import com.pietersvenson.workshop.config.Setting;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class EnablerCommandNode extends LambdaCommandNode {
 
   public EnablerCommandNode(@Nonnull CommandNode parent, @Nonnull Setting<Boolean> enablerSetting) {
     super(parent,
         Permissions.STAFF,
-        "Enables or disables the feature associated with the "
-            + Format.INFO + parent.getFullCommand()
-            + Format.ERROR + " command",
+        "Enables or disables the feature associated with the \""
+            + parent.getFullCommand()
+            +  "\" command",
         "enable",
         (sender, args) -> {
           enablerSetting.setValue(!enablerSetting.getValue());

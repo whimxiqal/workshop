@@ -39,9 +39,9 @@ public final class Settings {
   public static final Setting<Boolean> ENABLE_NICKNAME_COMMAND = new Setting<>("features.nicknames.enable", true, Boolean.class);
   public static final Setting<Boolean> ENABLE_HOMES = new Setting<>("features.homes.enable", true, Boolean.class);
   public static final Setting<Boolean> ENABLE_SPAWN = new Setting<>("features.spawn.enable", true, Boolean.class);
-  public static final Setting<Boolean> ENABLE_NOITEM = new Setting<>("features.noitem.enable", true, Boolean.class);
-  public static final Setting<Boolean> ENABLE_TELEPORTING = new Setting<>("features.tprequest.enable", true, Boolean.class);
+  public static final Setting<Boolean> ENABLE_BANITEM = new Setting<>("features.banitem.enable", true, Boolean.class);
   public static final Setting<Boolean> ENABLE_TECTONIC = new Setting<>("features.tectonic.enable", true, Boolean.class);
+  public static final Setting<Boolean> ENABLE_TELEPORTING = new Setting<>("features.tprequest.enable", true, Boolean.class);
   public static final Setting<Integer> TELEPORTING_TIMEOUT = new Setting<>("features.tprequest.timeout", 30, Integer.class);
 
 }

@@ -78,7 +78,7 @@ public class TeleportRequestCommand extends CommandNode {
         return;
       }
       if (uuid.get().equals(requester.getUniqueId())) {
-        sendCommandError(sender, "You can't request an teleport from yourself!");
+        sendCommandError(sender, "You can't request a teleport from yourself!");
         return;
       }
       Player destination = Bukkit.getPlayer(uuid.get());
@@ -88,7 +88,15 @@ public class TeleportRequestCommand extends CommandNode {
       }
       Workshop.getInstance().getState().getTeleportManager().request(requester.getUniqueId(), uuid.get());
       requester.sendMessage(Format.success("Request sent!"));
-      destination.sendMessage(Format.success(requester.getName() + " has requested to teleport to you"));
+      destination.sendMessage(Format.success(requester.getName() + " has requested to teleport to you."));
+      destination.sendMessage(Format.success("Use "
+          + Format.INFO + "/" + Workshop.getInstance()
+          .getWorkshopCommandTree()
+          .getNode(TeleportAcceptCommand.class)
+          .orElseThrow(IllegalArgumentException::new)
+          .getFullCommand()
+          + " " + requester.getName()
+          + Format.SUCCESS + " to accept."));
     });
     return true;
 

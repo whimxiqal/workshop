@@ -31,6 +31,7 @@ import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.features.FeatureListener;
 import com.pietersvenson.workshop.features.FeatureManager;
 import com.pietersvenson.workshop.state.Stateful;
+import org.bukkit.entity.Player;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -42,16 +43,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ClassroomManager extends FeatureManager implements Stateful {
 
-  /**
-   * The draft of the 'schedule' this operator is editing.
-   * This is keyed by a String because the operator might be
-   * any sort of {@link org.bukkit.command.CommandSender}, not just a
-   * {@link org.bukkit.entity.HumanEntity}
-   */
   private Map<String, Classroom> classrooms = Maps.newHashMap();
 
   /**
@@ -91,8 +87,8 @@ public class ClassroomManager extends FeatureManager implements Stateful {
   }
 
   @Nonnull
-  public List<Classroom> getInSession() {
-    return classrooms.values().stream().filter(Classroom::inSession).collect(Collectors.toList());
+  public Optional<Classroom> getInSession() {
+    return classrooms.values().stream().filter(Classroom::inSession).findFirst();
   }
 
   public boolean repeat(@Nonnull String name,

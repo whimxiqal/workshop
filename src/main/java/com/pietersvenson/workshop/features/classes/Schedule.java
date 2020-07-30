@@ -38,17 +38,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Schedule {
+
+
 
   public enum Status {
     PRE,
     DURING,
     POST,
-    EMPTY
+    EMPTY;
   }
-
   private LinkedList<Appointment> appointments = Lists.newLinkedList();
 
   public static Schedule empty() {
@@ -150,7 +152,6 @@ public class Schedule {
     if (index == -1 ) {
       return false;
     }
-    Workshop.getInstance().getLogger().info("Checking appointment number: " + (Math.abs(index) - 2));
     return appointments.get(Math.abs(index) - 2).includes(instant);
   }
 
@@ -167,6 +168,15 @@ public class Schedule {
 
   public boolean isContinuous() {
     return appointments.size() <= 1;
+  }
+
+  public Optional<Appointment> nextAppointment() {
+    for (Appointment appointment : appointments) {
+      if (appointment.getStart().isAfter(Instant.now())) {
+        return Optional.of(appointment);
+      }
+    }
+    return Optional.empty();
   }
 
   public Schedule repeat(@Nonnull Duration duration, int count) throws OverlappingAppointmentException {

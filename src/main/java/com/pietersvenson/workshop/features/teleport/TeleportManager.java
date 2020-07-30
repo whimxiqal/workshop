@@ -28,6 +28,7 @@ package com.pietersvenson.workshop.features.teleport;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
+import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.config.Settings;
 import com.pietersvenson.workshop.features.DeafFeatureManager;
 import org.bukkit.Bukkit;
@@ -36,13 +37,14 @@ import org.bukkit.entity.Player;
 import javax.annotation.Nonnull;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 public class TeleportManager extends DeafFeatureManager {
 
-  private Table<UUID, UUID, Instant> requests = HashBasedTable.create();
+  private final Table<UUID, UUID, Instant> requests = HashBasedTable.create();
 
   public boolean hasRequest(@Nonnull UUID requester, @Nonnull UUID destination) {
     return requests.get(requester, destination) != null;
@@ -54,10 +56,10 @@ public class TeleportManager extends DeafFeatureManager {
         Instant.now());
   }
 
-  public boolean expired(UUID requester, UUID destination) {
+  public boolean expired(UUID requester, UUID destination) throws NoSuchElementException {
     return Optional.ofNullable(requests.get(requester, destination))
-        .map(time -> time.plus(Settings.TELEPORTING_TIMEOUT.getValue(), ChronoUnit.SECONDS).isAfter(Instant.now()))
-        .orElse(true);
+        .map(time -> Instant.now().isAfter(time.plus(Settings.TELEPORTING_TIMEOUT.getValue(), ChronoUnit.SECONDS)))
+        .orElseThrow(() -> new NoSuchElementException("This requester and destination has no pending request"));
   }
 
   public boolean accept(@Nonnull UUID requester, @Nonnull UUID destination) {
@@ -65,7 +67,7 @@ public class TeleportManager extends DeafFeatureManager {
     if (requestTime == null) {
       return false;
     }
-    if (requestTime.plus(Settings.TELEPORTING_TIMEOUT.getValue(), ChronoUnit.SECONDS).isAfter(Instant.now())) {
+    if (expired(requester, destination)) {
       return false;
     }
     Player requesterPlayer = Bukkit.getPlayer(requester);
@@ -73,7 +75,14 @@ public class TeleportManager extends DeafFeatureManager {
     if (requesterPlayer == null || destinationPlayer == null) {
       return false;
     }
-    requesterPlayer.teleport(destinationPlayer.getLocation());
+    Bukkit.getScheduler().runTask(Workshop.getInstance(), () -> {
+      try {
+        requesterPlayer.teleport(destinationPlayer.getLocation());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    });
+    requests.remove(requester, destination);
     return true;
   }
 

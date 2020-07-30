@@ -48,15 +48,17 @@ public class ClassroomNicknameListener extends FeatureListener {
   @FeatureEventHandler
   public void onPlayerJoin(PlayerJoinEvent playerJoinEvent) {
     Player player = playerJoinEvent.getPlayer();
-    List<Classroom> progressing = Workshop.getInstance().getState().getClassroomManager().getInSession();
+    Optional<Classroom> progressing = Workshop.getInstance().getState().getClassroomManager().getInSession();
 
     if (!player.hasPermission(Permissions.STAFF)) {
       // Ensure they are allowed in the server
       if (Workshop.getInstance().getState().getClassroomManager().hasAny()) {
-        Optional<Classroom.Participant> participant = progressing.stream()
-            .flatMap(room -> room.getParticipants().stream())
-            .filter(part -> part.getPlayerUuid().equals(player.getUniqueId()))
-            .findFirst();
+        Optional<Classroom.Participant> participant = progressing
+            .flatMap(room -> room.getParticipants()
+                .stream()
+                .filter(part -> part.getPlayerUuid()
+                    .equals(player.getUniqueId()))
+                .findFirst());
 
         if (!participant.isPresent()) {
           return;
@@ -67,7 +69,7 @@ public class ClassroomNicknameListener extends FeatureListener {
               .getState()
               .getNicknameManager()
               .setNickname(participant.get().getPlayerUuid(),
-                  Format.participantDisplayName(participant.get(), player.getName()));
+                  Format.participantDisplayName(participant.get()));
         } catch (UnsupportedOperationException e) {
           Bukkit.getServer().broadcastMessage(Format.info(player.getName() + " is "
               + ChatColor.GREEN + participant.get().getFirstName() + " "

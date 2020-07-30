@@ -84,8 +84,8 @@ public class HomeCommand extends CommandNode {
       Optional<Location> home = Workshop.getInstance().getState().getHomeManager().getHome(player);
       if (!home.isPresent()) {
         player.sendMessage(Format.error("You don't have a home set yet! Use "
-            + ChatColor.GRAY
-            + "/home set"
+            + ChatColor.GRAY + "/"
+            + Workshop.getInstance().getWorkshopCommandTree().getNode(HomeSetCommand.class).get().getFullCommand()
             + Format.ERROR
             + " to set it."));
         return false;

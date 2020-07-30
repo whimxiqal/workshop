@@ -26,51 +26,44 @@
 package com.pietersvenson.workshop.features.nickname;
 
 import com.pietersvenson.workshop.features.FeatureListener;
-import com.pietersvenson.workshop.features.FeatureManager;
-import org.bukkit.Bukkit;
+import org.inventivetalent.nicknamer.api.NickNamerAPI;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
-public class NicknameManager extends FeatureManager {
+public class NicknamerNicknameManager extends NicknameManager {
 
-  public static NicknameManager getImplemented() {
-    if (Bukkit.getPluginManager().getPlugin("NickNamer") != null) {
-      return new NicknamerNicknameManager();
-    } else if (Bukkit.getPluginManager().getPlugin("Essentials") != null) {
-      return new EssentialsNicknameManager();
-    } else {
-      return new NicknameManager();
-    }
-  }
-
+  @Override
   boolean hasNickname(@Nonnull UUID playerUuid) throws UnsupportedOperationException {
-    throw new UnsupportedOperationException("This operation is not supported by the NicknameManager");
+    return NickNamerAPI.getNickManager().isNicked(playerUuid);
   }
 
+  @Override
   boolean isNicknameUsed(@Nonnull String nick) throws UnsupportedOperationException {
-    throw new UnsupportedOperationException("This operation is not supported by the NicknameManager");
+    return NickNamerAPI.getNickManager().isNickUsed(nick);
   }
 
   @Nonnull
+  @Override
   public Optional<String> getNickname(@Nonnull UUID playerUuid) throws UnsupportedOperationException {
-    throw new UnsupportedOperationException("This operation is not supported by the NicknameManager");
+    return Optional.ofNullable(NickNamerAPI.getNickManager().getNick(playerUuid));
   }
 
+  @Override
   public void setNickname(@Nonnull UUID playerUuid, @Nonnull String nick) throws UnsupportedOperationException {
-    throw new UnsupportedOperationException("This operation is not supported by the NicknameManager");
+    NickNamerAPI.getNickManager().setNick(playerUuid, nick);
   }
 
+  @Override
   void removeNickname(@Nonnull UUID playerUuid) throws UnsupportedOperationException {
-    throw new UnsupportedOperationException("This operation is not supported by the NicknameManager");
+    NickNamerAPI.getNickManager().removeNick(playerUuid);
   }
 
   @Nonnull
   @Override
   protected Collection<FeatureListener> getListeners() {
-    return Collections.emptyList();
+    return super.getListeners();
   }
 }

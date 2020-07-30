@@ -34,6 +34,7 @@ import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -71,10 +72,16 @@ public class FreezeListener extends FeatureListener {
   }
 
   @FeatureEventHandler
+  public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent playerCommandEvent) {
+    if (Workshop.getInstance().getState().getFreezeManager().isFrozen(playerCommandEvent.getPlayer())) {
+      playerCommandEvent.setCancelled(true);
+      playerCommandEvent.getPlayer().sendMessage(Format.error("You can't run commands when you are frozen!"));
+    }
+  }
+
+  @FeatureEventHandler
   public void onPlayerJoin(PlayerJoinEvent playerJoinEvent) {
     Player player = playerJoinEvent.getPlayer();
-    List<Classroom> progressing = Workshop.getInstance().getState().getClassroomManager().getInSession();
-
     if (!player.hasPermission(Permissions.STAFF)) {
 
       if (Workshop.getInstance().getState().getFreezeManager().isAllFrozen()) {

@@ -43,7 +43,10 @@ public final class ClassroomCommand extends FunctionlessCommandNode {
         new ClassroomRemoveCommand(this),
         new ClassroomEditCommand(this),
         new ClassroomListCommand(this),
-        new ClassroomInfoCommand(this));
+        new ClassroomInfoCommand(this),
+        new ClassroomPublicCommand(this),
+        new ClassroomWhoisCommand(this),
+        new ClassroomDismissCommand(this));
     setEnabler(Settings.ENABLE_CLASSES);
   }
 

@@ -25,52 +25,55 @@
 
 package com.pietersvenson.workshop.features.nickname;
 
+import com.google.common.collect.Maps;
 import com.pietersvenson.workshop.features.FeatureListener;
-import com.pietersvenson.workshop.features.FeatureManager;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
-public class NicknameManager extends FeatureManager {
+public class WorkshopNicknameManager extends NicknameManager {
 
-  public static NicknameManager getImplemented() {
-    if (Bukkit.getPluginManager().getPlugin("NickNamer") != null) {
-      return new NicknamerNicknameManager();
-    } else if (Bukkit.getPluginManager().getPlugin("Essentials") != null) {
-      return new EssentialsNicknameManager();
-    } else {
-      return new NicknameManager();
-    }
-  }
+  HashMap<UUID, String> nicknames = Maps.newHashMap();
 
+  @Override
   boolean hasNickname(@Nonnull UUID playerUuid) throws UnsupportedOperationException {
-    throw new UnsupportedOperationException("This operation is not supported by the NicknameManager");
+    return nicknames.containsKey(playerUuid);
   }
 
+  @Override
   boolean isNicknameUsed(@Nonnull String nick) throws UnsupportedOperationException {
-    throw new UnsupportedOperationException("This operation is not supported by the NicknameManager");
+    return nicknames.containsValue(nick);
   }
 
   @Nonnull
+  @Override
   public Optional<String> getNickname(@Nonnull UUID playerUuid) throws UnsupportedOperationException {
-    throw new UnsupportedOperationException("This operation is not supported by the NicknameManager");
+    return Optional.ofNullable(nicknames.get(playerUuid));
   }
 
+  @Override
   public void setNickname(@Nonnull UUID playerUuid, @Nonnull String nick) throws UnsupportedOperationException {
-    throw new UnsupportedOperationException("This operation is not supported by the NicknameManager");
+    nicknames.put(playerUuid, nick);
+    Bukkit.getPlayer(playerUuid).setDisplayName("-" + nick);
+    Bukkit.getPlayer(playerUuid).setCustomName("-");
   }
 
+  @Override
   void removeNickname(@Nonnull UUID playerUuid) throws UnsupportedOperationException {
-    throw new UnsupportedOperationException("This operation is not supported by the NicknameManager");
+    nicknames.remove(playerUuid);
+    Player player = Bukkit.getPlayer(playerUuid);
+    player.setDisplayName(player.getName());
+    player.setPlayerListName(player.getName());
   }
 
   @Nonnull
   @Override
   protected Collection<FeatureListener> getListeners() {
-    return Collections.emptyList();
+    return super.getListeners();
   }
 }

@@ -23,14 +23,10 @@
  *
  */
 
-package com.pietersvenson.workshop.util;
+package com.pietersvenson.workshop.inventory;
 
-public final class Reference {
+import org.bukkit.event.Listener;
 
-  private Reference() {
-  }
-
-  public static final String DESCRIPTION = "A Spigot plugin designed for the management of servers hosted by Einstein's Workshop";
-  public static final String VERSION = "0.1.4";
+public class InventoryMenuListener implements Listener {
 
 }

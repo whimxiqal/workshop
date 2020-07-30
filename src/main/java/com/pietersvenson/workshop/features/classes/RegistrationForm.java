@@ -23,14 +23,46 @@
  *
  */
 
-package com.pietersvenson.workshop.util;
+package com.pietersvenson.workshop.features.classes;
 
-public final class Reference {
+import javax.annotation.Nonnull;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.function.BiConsumer;
 
-  private Reference() {
+public class RegistrationForm {
+
+  private enum Stage {
+    FIRST_NAME("Please type your first name", (data, reg) -> reg.firstName = data),
+    LAST_NAME("Please type your last name", (data, reg) -> reg.lastName = data);
+
+    String message;
+    BiConsumer<String, RegistrationForm> consumer;
+
+    Stage(String message, BiConsumer<String, RegistrationForm> consumer) {
+      this.message = message;
+      this.consumer = consumer;
+    }
   }
 
-  public static final String DESCRIPTION = "A Spigot plugin designed for the management of servers hosted by Einstein's Workshop";
-  public static final String VERSION = "0.1.4";
+  private int cursor = 0;
+  private String firstName;
+  private String lastName;
+
+  public String message() {
+    return Stage.values()[cursor].message;
+  }
+
+  public void input(@Nonnull String data) {
+    Stage.values()[cursor++].consumer.accept(Objects.requireNonNull(data), this);
+  }
+
+  public boolean isDone() {
+    return cursor >= Stage.values().length;
+  }
+
+  public Classroom.Participant complete(@Nonnull UUID uuid) {
+    return new Classroom.Participant(firstName, lastName, Objects.requireNonNull(uuid));
+  }
 
 }

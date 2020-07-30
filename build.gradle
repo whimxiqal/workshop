@@ -1,7 +1,7 @@
 apply plugin: 'java'
 
 group = 'com.pietersvenson'
-version = '0.1.1'
+version = '0.1.4'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
@@ -24,6 +24,10 @@ repositories {
         name "essentialsx"
         url "https://ci.ender.zone/plugin/repository/everything/"
     }
+    maven {
+        name 'inventive-repo'
+        url 'https://repo.inventivetalent.org/content/groups/public'
+    }
 }
 
 dependencies {
@@ -40,4 +44,6 @@ dependencies {
     compile group: 'org.yaml', name: 'snakeyaml', version: '1.8'
 
     compileOnly 'net.ess3:EssentialsX:2.17.2'
+
+    compileOnly 'org.inventivetalent.nicknamer:api:3.18.3-SNAPSHOT'
 }
