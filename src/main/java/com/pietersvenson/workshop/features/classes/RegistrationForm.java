@@ -25,6 +25,8 @@
 
 package com.pietersvenson.workshop.features.classes;
 
+import com.pietersvenson.workshop.util.Format;
+
 import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.UUID;
@@ -33,8 +35,12 @@ import java.util.function.BiConsumer;
 public class RegistrationForm {
 
   private enum Stage {
-    FIRST_NAME("Please type your first name", (data, reg) -> reg.firstName = data),
-    LAST_NAME("Please type your last name", (data, reg) -> reg.lastName = data);
+    FIRST_NAME(Format.INFO + "Enter your "
+        + Format.ACCENT_1 + "first "
+        + Format.INFO + "name", (data, reg) -> reg.firstName = data),
+    LAST_NAME(Format.INFO + "Enter your "
+        + Format.ACCENT_2 + "last "
+        + Format.INFO + "name", (data, reg) -> reg.lastName = data);
 
     String message;
     BiConsumer<String, RegistrationForm> consumer;

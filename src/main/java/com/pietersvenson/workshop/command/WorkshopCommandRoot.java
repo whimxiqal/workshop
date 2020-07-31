@@ -27,27 +27,26 @@ package com.pietersvenson.workshop.command;
 
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandNode;
+import com.pietersvenson.workshop.features.banitem.BanitemCommand;
 import com.pietersvenson.workshop.features.classes.command.ClassroomCommand;
 import com.pietersvenson.workshop.features.freeze.FreezeCommand;
 import com.pietersvenson.workshop.features.gather.GatherCommand;
 import com.pietersvenson.workshop.features.home.HomeCommand;
 import com.pietersvenson.workshop.features.nickname.NicknameCommand;
-import com.pietersvenson.workshop.features.banitem.BanitemCommand;
 import com.pietersvenson.workshop.features.spawn.SpawnCommand;
 import com.pietersvenson.workshop.features.teleport.TeleportAcceptCommand;
 import com.pietersvenson.workshop.features.teleport.TeleportRequestCommand;
-import com.pietersvenson.workshop.inventory.InventoryMenu;
+import com.pietersvenson.workshop.features.menu.InventoryMenu;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
 import com.pietersvenson.workshop.util.Reference;
-
-import javax.annotation.Nonnull;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
+
+import javax.annotation.Nonnull;
 
 public final class WorkshopCommandRoot extends CommandNode {
 
@@ -89,7 +88,7 @@ public final class WorkshopCommandRoot extends CommandNode {
     }
     sender.sendMessage(ChatColor.GRAY + "# " + Format.THEME + "Workshop " + ChatColor.GRAY + "v." + Reference.VERSION + " #");
     if (sender instanceof Player) {
-      Workshop.getInstance().getState().getInventoryMenuManager().startUsing(InventoryMenu.STUDENT_MENU, (Player) sender);
+      Workshop.getInstance().getState().getMenuManager().startUsingMenu(InventoryMenu.easyMenu((Player) sender), (Player) sender);
     }
     return true;
   }

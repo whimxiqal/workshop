@@ -25,7 +25,6 @@
 
 package com.pietersvenson.workshop.config;
 
-import com.google.common.collect.Maps;
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.state.Stateful;
 import org.bukkit.configuration.file.FileConfiguration;

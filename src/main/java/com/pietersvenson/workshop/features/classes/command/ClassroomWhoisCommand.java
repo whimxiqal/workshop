@@ -28,7 +28,6 @@ package com.pietersvenson.workshop.features.classes.command;
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.command.common.CommandError;
 import com.pietersvenson.workshop.command.common.CommandNode;
-import com.pietersvenson.workshop.command.common.LambdaCommandNode;
 import com.pietersvenson.workshop.command.common.Parameter;
 import com.pietersvenson.workshop.command.common.ParameterSuppliers;
 import com.pietersvenson.workshop.features.classes.Classroom;

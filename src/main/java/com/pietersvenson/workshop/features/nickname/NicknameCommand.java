@@ -36,7 +36,6 @@ import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.External;
 import com.pietersvenson.workshop.util.Format;
 import com.pietersvenson.workshop.util.Validate;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -91,7 +90,7 @@ public final class NicknameCommand extends FunctionlessCommandNode {
           return;
         }
         try {
-          Workshop.getInstance().getState().getNicknameManager().setNickname(uuid.get(), args[1] + ChatColor.RESET);
+          Workshop.getInstance().getState().getNicknameManager().setNickname(uuid.get(), args[1]);
           sender.sendMessage(Format.success("Nickname set!"));
         } catch (UnsupportedOperationException e) {
           sender.sendMessage(Format.error("That command is not currently supported"));

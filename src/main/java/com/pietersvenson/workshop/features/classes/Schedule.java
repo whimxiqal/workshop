@@ -26,7 +26,6 @@
 package com.pietersvenson.workshop.features.classes;
 
 import com.google.common.collect.Lists;
-import com.pietersvenson.workshop.Workshop;
 
 import javax.annotation.Nonnull;
 import java.text.ParseException;

@@ -31,7 +31,6 @@ import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.features.FeatureListener;
 import com.pietersvenson.workshop.features.FeatureManager;
 import com.pietersvenson.workshop.state.Stateful;
-import org.bukkit.entity.Player;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -43,8 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class ClassroomManager extends FeatureManager implements Stateful {
 

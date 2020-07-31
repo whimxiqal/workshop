@@ -23,28 +23,39 @@
  *
  */
 
-package com.pietersvenson.workshop.features.tectonic;
+package com.pietersvenson.workshop.features.menu;
 
+import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.config.Settings;
 import com.pietersvenson.workshop.features.FeatureEventHandler;
 import com.pietersvenson.workshop.features.FeatureListener;
-import com.pietersvenson.workshop.permission.Permissions;
-import com.pietersvenson.workshop.util.Format;
-import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
-public class TectonicListener extends FeatureListener {
+public class MenuListener extends FeatureListener {
 
-  protected TectonicListener() {
-    super(Settings.ENABLE_TECTONIC);
+  protected MenuListener() {
+    super(Settings.ENABLE_EASY_MENU);
   }
 
   @FeatureEventHandler
-  public void onBreakBlock(BlockBreakEvent blockBreakEvent) {
-    if (!blockBreakEvent.getPlayer().hasPermission(Permissions.STAFF)
-        && blockBreakEvent.getBlock().getY() <= 0) {
-      blockBreakEvent.setCancelled(true);
-      blockBreakEvent.getPlayer().sendMessage(Format.error("You may not break blocks at level 0"));
+  public void onRightClick(PlayerInteractEvent interactEvent) {
+    MenuManager menuManager = Workshop.getInstance().getState().getMenuManager();
+    if (interactEvent.getAction() == Action.LEFT_CLICK_AIR
+        || interactEvent.getAction() == Action.LEFT_CLICK_BLOCK
+        || interactEvent.getHand() != EquipmentSlot.HAND) {
+      return;
+    }
+    boolean clickedBlock = interactEvent.getAction() == Action.RIGHT_CLICK_BLOCK
+        && interactEvent.getItem() == null
+        && interactEvent.getClickedBlock() != null
+        && !interactEvent.getClickedBlock().getType().isInteractable();
+    if (clickedBlock) {
+      menuManager.rightClicked(interactEvent.getPlayer());
+      if (menuManager.isActivated(interactEvent.getPlayer())) {
+        menuManager.startUsingMenu(InventoryMenu.easyMenu(interactEvent.getPlayer()), interactEvent.getPlayer());
+      }
     }
   }
-
 }

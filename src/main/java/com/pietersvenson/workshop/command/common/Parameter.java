@@ -25,23 +25,20 @@
 
 package com.pietersvenson.workshop.command.common;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NonNull;
+import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
-
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
-
-import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
 
 @Builder
 public class Parameter {

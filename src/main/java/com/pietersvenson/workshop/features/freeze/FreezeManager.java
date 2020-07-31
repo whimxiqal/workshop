@@ -30,16 +30,14 @@ import com.pietersvenson.workshop.features.FeatureListener;
 import com.pietersvenson.workshop.features.FeatureManager;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+import java.util.UUID;
 
 public class FreezeManager extends FeatureManager {
 

@@ -33,15 +33,6 @@ import com.pietersvenson.workshop.features.FeatureListener;
 import com.pietersvenson.workshop.features.FeatureManager;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.state.Stateful;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
@@ -49,6 +40,14 @@ import org.bukkit.inventory.ItemStack;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
+
+import javax.annotation.Nonnull;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BanitemManager extends FeatureManager implements Stateful {
 

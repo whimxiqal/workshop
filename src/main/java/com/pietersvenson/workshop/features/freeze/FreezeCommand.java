@@ -32,15 +32,14 @@ import com.pietersvenson.workshop.command.common.ParameterSuppliers;
 import com.pietersvenson.workshop.config.Settings;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.pietersvenson.workshop.util.Randomer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class FreezeCommand extends CommandNode {
 

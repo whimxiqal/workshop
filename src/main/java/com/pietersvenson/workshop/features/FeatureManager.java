@@ -31,7 +31,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 
 import javax.annotation.Nonnull;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.Collection;

@@ -31,11 +31,9 @@ import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.config.Settings;
 import com.pietersvenson.workshop.util.External;
 import com.pietersvenson.workshop.util.Format;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import javax.annotation.Nonnull;
@@ -71,7 +69,7 @@ public class Classroom {
   @NonNull
   private final List<Participant> participants = Lists.newLinkedList();
   private Map<UUID, RegistrationForm> registering = Maps.newHashMap();
-  private boolean publik;
+  private boolean publiC = false;
 
   public Classroom(@Nonnull String id) {
     this.id = Objects.requireNonNull(id);
@@ -170,8 +168,10 @@ public class Classroom {
     return getRegistrationForm(player).isPresent();
   }
 
-  public void startRegistering(UUID player) {
-    this.registering.put(player, new RegistrationForm());
+  public RegistrationForm startRegistering(UUID player) {
+    RegistrationForm out = new RegistrationForm();
+    this.registering.put(player, out);
+    return out;
   }
 
   public Optional<Participant> completeRegistration(UUID player) {
@@ -186,11 +186,11 @@ public class Classroom {
   }
 
   public void setPublic(boolean publik) {
-    this.publik = publik;
+    this.publiC = publik;
   }
 
   public boolean isPublic() {
-    return this.publik;
+    return this.publiC;
   }
 
   @Data

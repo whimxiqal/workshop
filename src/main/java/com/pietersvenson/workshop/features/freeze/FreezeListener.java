@@ -29,7 +29,6 @@ import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.config.Settings;
 import com.pietersvenson.workshop.features.FeatureEventHandler;
 import com.pietersvenson.workshop.features.FeatureListener;
-import com.pietersvenson.workshop.features.classes.Classroom;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
 import org.bukkit.entity.Player;
@@ -38,10 +37,6 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-
-import javax.annotation.Nonnull;
-import java.util.List;
-import java.util.function.Supplier;
 
 public class FreezeListener extends FeatureListener {
 

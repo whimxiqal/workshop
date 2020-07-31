@@ -32,16 +32,15 @@ import com.pietersvenson.workshop.command.common.ParameterSuppliers;
 import com.pietersvenson.workshop.config.Settings;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
-
-import java.util.Map;
-import java.util.Optional;
-import javax.annotation.Nonnull;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import javax.annotation.Nonnull;
+import java.util.Map;
+import java.util.Optional;
 
 public class HomeCommand extends CommandNode {
 

@@ -23,11 +23,13 @@
  *
  */
 
-package com.pietersvenson.workshop.inventory;
+package com.pietersvenson.workshop.features.menu;
 
 import com.google.common.collect.Maps;
 import com.pietersvenson.workshop.Workshop;
-import com.pietersvenson.workshop.features.DeafFeatureManager;
+import com.pietersvenson.workshop.config.Settings;
+import com.pietersvenson.workshop.features.FeatureListener;
+import com.pietersvenson.workshop.features.FeatureManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -36,27 +38,32 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
+import javax.annotation.Nonnull;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class InventoryMenuManager extends DeafFeatureManager implements Listener {
+public class MenuManager extends FeatureManager implements Listener {
 
   private HashMap<UUID, InventoryMenu> usingMenu = Maps.newHashMap();
+  private HashMap<UUID, Integer> rightClicks = Maps.newHashMap();
 
-  public InventoryMenuManager() {
+  public MenuManager() {
     Bukkit.getPluginManager().registerEvents(this, Workshop.getInstance());
   }
 
-  public void startUsing(InventoryMenu menu, HumanEntity player) {
+  public void startUsingMenu(InventoryMenu menu, HumanEntity player) {
+    player.closeInventory();
     menu.open(player);
     usingMenu.put(player.getUniqueId(), menu);
   }
 
-  public void stopUsing(HumanEntity player) {
-    usingMenu.remove(player.getUniqueId());
+  public void stopUsingMenu(HumanEntity player) {
+    player.closeInventory();
   }
 
-  public boolean isUsing(HumanEntity player) {
+  public boolean isUsingMenu(HumanEntity player) {
     return usingMenu.containsKey(player.getUniqueId());
   }
 
@@ -65,20 +72,40 @@ public class InventoryMenuManager extends DeafFeatureManager implements Listener
     if (!(e.getWhoClicked() instanceof Player)) {
       return;
     }
-    if (isUsing(e.getWhoClicked())) {
+    if (isUsingMenu(e.getWhoClicked())) {
       InventoryMenu menu = usingMenu.get(e.getWhoClicked().getUniqueId());
       menu.getItem(e.getSlot()).ifPresent(item -> {
         e.getWhoClicked().closeInventory();
-        item.accept((Player) e.getWhoClicked());
+        item.run();
       });
     }
   }
 
   @EventHandler
   public void onInventoryClose(InventoryCloseEvent e) {
-    if (isUsing(e.getPlayer())) {
-      stopUsing(e.getPlayer());
-    }
+    this.usingMenu.remove(e.getPlayer().getUniqueId());
+  }
+
+  public void rightClicked(Player player) {
+    this.rightClicks.putIfAbsent(player.getUniqueId(), 0);
+    this.rightClicks.put(player.getUniqueId(), this.rightClicks.get(player.getUniqueId()) + 1);
+    Bukkit.getScheduler().runTaskLater(
+        Workshop.getInstance(),
+        () -> {
+          this.rightClicks.put(player.getUniqueId(), this.rightClicks.get(player.getUniqueId()) - 1);
+        },
+        Settings.EASY_MENU_TIMEOUT.getValue());
+  }
+
+  public boolean isActivated(Player player) {
+    return this.rightClicks.get(player.getUniqueId()) != null
+        && this.rightClicks.get(player.getUniqueId()) >= Settings.EASY_MENU_CLICK_COUNT.getValue();
+  }
+
+  @Nonnull
+  @Override
+  protected Collection<FeatureListener> getListeners() {
+    return Collections.singleton(new MenuListener());
   }
 
 }

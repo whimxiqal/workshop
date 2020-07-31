@@ -34,7 +34,6 @@ import com.pietersvenson.workshop.features.classes.ClassroomManager;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
 import com.pietersvenson.workshop.util.Validate;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -71,10 +70,12 @@ public class ClassroomCreateCommand extends CommandNode {
       sendCommandError(sender, "A classroom by this name already exists.");
       return false;
     }
-    manager.addClassroom(new Classroom(args[0]));
+    Classroom classroom = new Classroom(args[0]);
+    manager.addClassroom(classroom);
     sender.sendMessage(Format.success("You created the class "
-        + ChatColor.GRAY + args[0]
-        + Format.SUCCESS + ". Use other class commands to add a schedule and participants."));
+        + Format.ACCENT_1 + args[0]
+        + Format.SUCCESS + ". Use other class commands to add a schedule and participants. "
+        + "This class is currently " + (classroom.isPublic() ? "public" : "private") + "."));
     return true;
   }
 

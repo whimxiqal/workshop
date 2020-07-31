@@ -25,14 +25,14 @@
 
 package com.pietersvenson.workshop.command.common;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Stack;
-import javax.annotation.Nonnull;
-
 import org.bukkit.command.PluginCommand;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import javax.annotation.Nonnull;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Stack;
 
 public class CommandTree {
 

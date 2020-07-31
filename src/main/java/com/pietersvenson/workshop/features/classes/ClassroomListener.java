@@ -80,8 +80,11 @@ public class ClassroomListener extends FeatureListener {
                       + Workshop.getInstance().getState().getNicknameManager().getNickname(participant.get().getPlayerUuid())));
             }
           } else if (progressing.get().isPublic()) {
-            progressing.get().startRegistering(player.getUniqueId());
-            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10000, 5));
+            Optional<RegistrationForm> form = progressing.get().getRegistrationForm(player.getUniqueId());
+            if (!form.isPresent()) {
+              form = Optional.of(progressing.get().startRegistering(player.getUniqueId()));
+            }
+            notify(player, form.get());
           } else {
             player.kickPlayer("You're not registered for this class: \n"
                 + progressing.get().getName() + "\n\n"
@@ -151,7 +154,10 @@ public class ClassroomListener extends FeatureListener {
             }
             unnotify(playerChatEvent.getPlayer());
             playerChatEvent.getPlayer().sendMessage(Format.success("Thank you for registering!"));
-            Communication.sendStaffMessage(Format.info(playerChatEvent.getPlayer().getName() + " just registered for the class "
+            Bukkit.getServer().broadcastMessage(Format.info(
+                participant.get().getFirstName() + " " + participant.get().getLastName()
+                + " (" + Format.ACCENT_1 + playerChatEvent.getPlayer().getName() + Format.INFO + ")"
+                + " just registered for the class "
                 + Workshop.getInstance().getState().getClassroomManager().getInSession().get().getId()));
             if (participant.get().giveNickname()) {
               playerChatEvent.getPlayer().sendMessage(Format.info(
@@ -183,11 +189,14 @@ public class ClassroomListener extends FeatureListener {
     player.teleport(location);
     player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10000, 10));
     player.resetTitle();
-    player.sendTitle(Format.WARN + form.message(), "Press t to talk", 0, 10000, 0);
+    player.sendTitle(Format.WARN + form.message(), "Press t to chat", 10, 10000, 0);
   }
 
   private void unnotify(Player player) {
     player.setInvulnerable(false);
+    Location location = player.getLocation();
+    location.setPitch(0);
+    player.teleport(location);
     player.removePotionEffect(PotionEffectType.BLINDNESS);
     player.resetTitle();
   }

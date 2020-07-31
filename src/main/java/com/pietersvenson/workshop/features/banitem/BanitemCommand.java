@@ -33,16 +33,15 @@ import com.pietersvenson.workshop.command.common.ParameterSuppliers;
 import com.pietersvenson.workshop.config.Settings;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class BanitemCommand extends CommandNode {
 
@@ -102,12 +101,12 @@ public class BanitemCommand extends CommandNode {
       banitemManager.unban(material);
         sender.sendMessage(Format.success("The item "
             + material.toString() + " is now "
-            + ChatColor.YELLOW + "unbanned"));
+            + Format.ACCENT_1 + "unbanned"));
     } else {
       banitemManager.ban(material);
       sender.sendMessage(Format.success("The item "
           + material.toString() + " is now "
-          + ChatColor.RED + "banned"));
+          + Format.ACCENT_2 + "banned"));
     }
     return true;
   }

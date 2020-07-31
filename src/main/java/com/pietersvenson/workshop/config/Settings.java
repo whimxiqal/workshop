@@ -33,6 +33,7 @@ public final class Settings {
   private Settings() {
   }
 
+
   public static final Setting<Boolean> ENABLE_CLASSES = new Setting<>("features.classes.enable", true, Boolean.class);
   public static final Setting<Boolean> ENABLE_NICKNAME_PARTICIPANTS = new Setting<>("features.classes.nickname-participants", true, Boolean.class);
   public static final Setting<Boolean> ENABLE_FREEZE = new Setting<>("features.freeze.enable", true, Boolean.class);
@@ -42,6 +43,10 @@ public final class Settings {
   public static final Setting<Boolean> ENABLE_BANITEM = new Setting<>("features.banitem.enable", true, Boolean.class);
   public static final Setting<Boolean> ENABLE_TECTONIC = new Setting<>("features.tectonic.enable", true, Boolean.class);
   public static final Setting<Boolean> ENABLE_TELEPORTING = new Setting<>("features.tprequest.enable", true, Boolean.class);
-  public static final Setting<Integer> TELEPORTING_TIMEOUT = new Setting<>("features.tprequest.timeout", 30, Integer.class);
+  public static final Setting<Integer> TELEPORTING_TIMEOUT = new Setting<>("features.tprequest.timeout", 60, Integer.class);
+  public static final Setting<Boolean> ENABLE_EASY_MENU = new Setting<>("features.easy-menu.enable", true, Boolean.class);
+  public static final Setting<Integer> EASY_MENU_TIMEOUT = new Setting<>("features.easy-menu.timeout", 10, Integer.class);
+  public static final Setting<Integer> EASY_MENU_CLICK_COUNT = new Setting<>("features.easy-menu.click-count", 3, Integer.class);
+
 
 }

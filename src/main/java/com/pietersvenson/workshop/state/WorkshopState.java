@@ -28,11 +28,16 @@ package com.pietersvenson.workshop.state;
 import com.google.common.io.Files;
 import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.config.ConfigManager;
+import com.pietersvenson.workshop.features.banitem.BanitemManager;
 import com.pietersvenson.workshop.features.classes.ClassroomManager;
 import com.pietersvenson.workshop.features.freeze.FreezeManager;
 import com.pietersvenson.workshop.features.home.HomeManager;
+import com.pietersvenson.workshop.features.menu.MenuManager;
 import com.pietersvenson.workshop.features.nickname.NicknameManager;
-import com.pietersvenson.workshop.features.banitem.BanitemManager;
+import com.pietersvenson.workshop.features.spawn.SpawnManager;
+import com.pietersvenson.workshop.features.tectonic.TectonicManager;
+import com.pietersvenson.workshop.features.teleport.TeleportManager;
+import lombok.Getter;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,12 +46,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-
-import com.pietersvenson.workshop.features.spawn.SpawnManager;
-import com.pietersvenson.workshop.features.tectonic.TectonicManager;
-import com.pietersvenson.workshop.features.teleport.TeleportManager;
-import com.pietersvenson.workshop.inventory.InventoryMenuManager;
-import lombok.Getter;
 
 public final class WorkshopState {
 
@@ -69,7 +68,7 @@ public final class WorkshopState {
   @Getter
   private final TectonicManager tectonicManager = new TectonicManager();
   @Getter
-  private final InventoryMenuManager inventoryMenuManager = new InventoryMenuManager();
+  private final MenuManager menuManager = new MenuManager();
 
   private List<Stateful> getStatefuls() {
     return Arrays.stream(WorkshopState.class.getDeclaredFields())

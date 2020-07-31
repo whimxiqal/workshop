@@ -25,8 +25,8 @@
 
 package com.pietersvenson.workshop.features;
 
-import com.pietersvenson.workshop.config.Setting;
 import com.pietersvenson.workshop.config.NullableSettingEnablee;
+import com.pietersvenson.workshop.config.Setting;
 import org.bukkit.event.Listener;
 
 import javax.annotation.Nonnull;

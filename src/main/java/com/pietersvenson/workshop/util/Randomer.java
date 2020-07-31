@@ -26,6 +26,7 @@
 package com.pietersvenson.workshop.util;
 
 import com.google.common.collect.Lists;
+import org.bukkit.Material;
 
 import java.util.List;
 import java.util.Random;
@@ -56,6 +57,28 @@ public final class Randomer {
 
   public static String word(WordType type) {
     return chooseRandom(type.list);
+  }
+
+  public static Material randomConcrete() {
+    Material[] concretes = {
+        Material.BLACK_CONCRETE,
+        Material.BLUE_CONCRETE,
+        Material.BROWN_CONCRETE,
+        Material.CYAN_CONCRETE,
+        Material.GRAY_CONCRETE,
+        Material.GREEN_CONCRETE,
+        Material.LIGHT_BLUE_CONCRETE,
+        Material.LIGHT_GRAY_CONCRETE,
+        Material.LIME_CONCRETE,
+        Material.MAGENTA_CONCRETE,
+        Material.ORANGE_CONCRETE,
+        Material.PINK_CONCRETE,
+        Material.PURPLE_CONCRETE,
+        Material.RED_CONCRETE,
+        Material.WHITE_CONCRETE,
+        Material.YELLOW_CONCRETE
+    };
+    return concretes[new Random().nextInt(16)];
   }
 
   private static String chooseRandom(List<String> list) {

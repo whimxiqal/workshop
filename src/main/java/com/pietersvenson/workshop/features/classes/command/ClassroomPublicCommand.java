@@ -34,10 +34,8 @@ import com.pietersvenson.workshop.features.classes.Classroom;
 import com.pietersvenson.workshop.permission.Permissions;
 import com.pietersvenson.workshop.util.Format;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
-import java.util.function.BiFunction;
 
 public class ClassroomPublicCommand extends LambdaCommandNode {
 

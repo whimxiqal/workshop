@@ -26,22 +26,14 @@
 package com.pietersvenson.workshop.util;
 
 import com.google.common.collect.Lists;
-import com.pietersvenson.workshop.Workshop;
 import com.pietersvenson.workshop.features.classes.Classroom;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.Locale;
-import java.util.stream.Collectors;
 
 public final class Format {
 
@@ -54,6 +46,8 @@ public final class Format {
   public static final ChatColor WARN = ChatColor.YELLOW;
   public static final ChatColor ERROR = ChatColor.RED;
   public static final ChatColor STAFF = ChatColor.AQUA;
+  public static final ChatColor ACCENT_1 = ChatColor.GOLD;
+  public static final ChatColor ACCENT_2 = ChatColor.BLUE;
   public static final String PREFIX = THEME + "Workshop % " + ChatColor.RESET;
 
   public static String success(String message) {

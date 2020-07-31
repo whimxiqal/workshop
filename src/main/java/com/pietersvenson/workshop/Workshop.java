@@ -28,6 +28,7 @@ package com.pietersvenson.workshop;
 import com.pietersvenson.workshop.command.WorkshopCommandRoot;
 import com.pietersvenson.workshop.command.common.CommandTree;
 import com.pietersvenson.workshop.state.WorkshopState;
+import com.pietersvenson.workshop.util.Glowing;
 import com.pietersvenson.workshop.util.Reference;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -82,6 +83,9 @@ public final class Workshop extends JavaPlugin {
       state.save();
       getLogger().info("Automatically saved Workshop data.");
     }, 12000, 12000);
+
+    // Extra preparation
+    Glowing.register(this);
 
   }
 

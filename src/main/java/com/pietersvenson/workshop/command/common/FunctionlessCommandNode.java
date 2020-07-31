@@ -26,7 +26,6 @@
 package com.pietersvenson.workshop.command.common;
 
 import com.pietersvenson.workshop.config.Setting;
-import com.pietersvenson.workshop.util.Format;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
