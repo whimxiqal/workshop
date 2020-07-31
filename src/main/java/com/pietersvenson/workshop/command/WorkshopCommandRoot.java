@@ -32,6 +32,7 @@ import com.pietersvenson.workshop.features.classes.command.ClassroomCommand;
 import com.pietersvenson.workshop.features.freeze.FreezeCommand;
 import com.pietersvenson.workshop.features.gather.GatherCommand;
 import com.pietersvenson.workshop.features.home.HomeCommand;
+import com.pietersvenson.workshop.features.menu.MenuCommand;
 import com.pietersvenson.workshop.features.nickname.NicknameCommand;
 import com.pietersvenson.workshop.features.spawn.SpawnCommand;
 import com.pietersvenson.workshop.features.teleport.TeleportAcceptCommand;
@@ -72,7 +73,8 @@ public final class WorkshopCommandRoot extends CommandNode {
         new SpawnCommand(this),
         new TeleportAcceptCommand(this),
         new TeleportRequestCommand(this),
-        new GatherCommand(this)
+        new GatherCommand(this),
+        new MenuCommand(this)
     );
   }
 

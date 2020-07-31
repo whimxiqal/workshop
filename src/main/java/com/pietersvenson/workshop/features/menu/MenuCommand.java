@@ -23,14 +23,16 @@
  *
  */
 
-package com.pietersvenson.workshop.util;
+package com.pietersvenson.workshop.features.menu;
 
-public final class Reference {
+import com.pietersvenson.workshop.command.common.CommandNode;
+import com.pietersvenson.workshop.command.common.EnablerCommandNode;
+import com.pietersvenson.workshop.config.Settings;
 
-  private Reference() {
+import javax.annotation.Nonnull;
+
+public class MenuCommand extends EnablerCommandNode {
+  public MenuCommand(@Nonnull CommandNode parent) {
+    super(parent, Settings.ENABLE_EASY_MENU);
   }
-
-  public static final String DESCRIPTION = "A Spigot plugin designed for the management of servers hosted by Einstein's Workshop";
-  public static final String VERSION = "0.2.1";
-
 }

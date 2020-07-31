@@ -48,6 +48,7 @@ public final class Format {
   public static final ChatColor STAFF = ChatColor.AQUA;
   public static final ChatColor ACCENT_1 = ChatColor.GOLD;
   public static final ChatColor ACCENT_2 = ChatColor.BLUE;
+  public static final ChatColor DEFAULT = ChatColor.WHITE;
   public static final String PREFIX = THEME + "Workshop % " + ChatColor.RESET;
 
   public static String success(String message) {
