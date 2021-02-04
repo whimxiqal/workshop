@@ -39,7 +39,8 @@ public class NicknameManager extends FeatureManager {
 
   public static NicknameManager getImplemented() {
     if (Bukkit.getPluginManager().getPlugin("NickNamer") != null) {
-      return new NicknamerNicknameManager();
+      return new NicknameManager();
+//      return new NicknamerNicknameManager();
     } else if (Bukkit.getPluginManager().getPlugin("Essentials") != null) {
       return new EssentialsNicknameManager();
     } else {

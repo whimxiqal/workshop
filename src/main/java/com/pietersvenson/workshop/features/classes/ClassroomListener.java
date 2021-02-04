@@ -86,9 +86,13 @@ public class ClassroomListener extends FeatureListener {
             }
             notify(player, form.get());
           } else {
-            player.kickPlayer("You're not registered for this class: \n"
-                + progressing.get().getName() + "\n\n"
-                + "Please contact info@einsteinsworkshop.com if you think this is an error.");
+            player.kickPlayer("You're not registered for this class. \n"
+                + progressing.get().getName() +
+                (Settings.CONTACT_EMAIL.getValue().isEmpty()
+                    ? ""
+                    : "\n\n" + String.format(
+                    "Please contact %s if you think this is an error.",
+                    Settings.CONTACT_EMAIL.getValue())));
             Communication.sendStaffMessage(Format.warn("The player "
                 + player.getName()
                 + " just tried to log in but is not registered for a class in session"));
@@ -156,9 +160,9 @@ public class ClassroomListener extends FeatureListener {
             playerChatEvent.getPlayer().sendMessage(Format.success("Thank you for registering!"));
             Bukkit.getServer().broadcastMessage(Format.info(
                 participant.get().getFirstName() + " " + participant.get().getLastName()
-                + " (" + Format.ACCENT_1 + playerChatEvent.getPlayer().getName() + Format.INFO + ")"
-                + " just registered for the class "
-                + Workshop.getInstance().getState().getClassroomManager().getInSession().get().getId()));
+                    + " (" + Format.ACCENT_1 + playerChatEvent.getPlayer().getName() + Format.INFO + ")"
+                    + " just registered for the class "
+                    + Workshop.getInstance().getState().getClassroomManager().getInSession().get().getId()));
             if (participant.get().giveNickname()) {
               playerChatEvent.getPlayer().sendMessage(Format.info(
                   "Your name is set to "

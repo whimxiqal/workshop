@@ -30,7 +30,7 @@ public final class Reference {
   private Reference() {
   }
 
-  public static final String DESCRIPTION = "A Spigot plugin designed for the management of servers hosted by Einstein's Workshop";
+  public static final String DESCRIPTION = "A Spigot plugin designed for the management of classes on Minecraft servers";
   public static final String VERSION = "0.2.1";
 
 }

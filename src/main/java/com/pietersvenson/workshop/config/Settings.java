@@ -48,5 +48,7 @@ public final class Settings {
   public static final Setting<Integer> EASY_MENU_TIMEOUT = new Setting<>("features.easy-menu.timeout", 10, Integer.class);
   public static final Setting<Integer> EASY_MENU_CLICK_COUNT = new Setting<>("features.easy-menu.click-count", 3, Integer.class);
 
+  public static final Setting<String> CONTACT_EMAIL = new Setting<>("features.classes.contact-email", "", String.class);
+
 
 }
